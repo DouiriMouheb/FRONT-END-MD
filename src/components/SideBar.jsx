@@ -1,10 +1,11 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, Home, FileText, X } from 'lucide-react';
+import { Menu, Home, FileText, X, Edit } from 'lucide-react';
 
 const navItems = [
   { to: '/', label: 'Home', icon: Home },
   { to: '/example', label: 'Example', icon: FileText },
+  { to: '/batch-editing', label: 'Batch Editing', icon: Edit },
 ];
 
 const Sidebar = ({ open, setOpen, isMobile }) => {

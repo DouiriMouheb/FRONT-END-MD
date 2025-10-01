@@ -6,6 +6,7 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import MainLayout from './layouts/MainLayout';
 import Home from './pages/Home';
 import Example from './pages/Example';
+import BatchEditing from './pages/BatchEditing';
 
 const App = () => (
   <ThemeProvider>
@@ -48,6 +49,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/example" element={<Example />} />
+          <Route path="/batch-editing" element={<BatchEditing />} />
         </Routes>
       </MainLayout>
     </Router>
