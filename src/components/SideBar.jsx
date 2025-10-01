@@ -19,13 +19,7 @@ const Sidebar = ({ open, setOpen, isMobile }) => {
   };
 
   return (
-    <aside className={`
-      fixed h-screen bg-sidebar-bg text-sidebar-text flex flex-col p-4 z-40 left-0 top-0 shadow-lg transition-all duration-300
-      ${isMobile 
-        ? `${open ? 'translate-x-0 w-64' : '-translate-x-full w-64'}` 
-        : `${open ? 'w-64' : 'w-16'}`
-      }
-    `}>
+    <aside className={`fixed h-screen z-40 left-0 top-0 transition-all duration-300 ${isMobile ? (open ? 'translate-x-0' : '-translate-x-full') : ''} ${open || isMobile ? 'sidebar' : 'sidebar sidebar-compact'} p-4`}> 
       {/* Mobile header with close button */}
       {isMobile && open && (
         <div className="flex items-center justify-between mb-6">
@@ -42,12 +36,8 @@ const Sidebar = ({ open, setOpen, isMobile }) => {
 
       {/* Desktop toggle button */}
       {!isMobile && (
-        <button
-          className="mb-6 flex justify-center items-center w-10 h-10 bg-muted rounded text-sidebar-text hover:bg-sidebar-hover transition-colors self-start"
-          onClick={() => setOpen(!open)}
-          aria-label={open ? 'Close sidebar' : 'Open sidebar'}
-        >
-          {open ? <X size={20} /> : <Menu size={20} />}
+        <button className="btn btn-ghost mb-6 self-start" onClick={() => setOpen(!open)} aria-label={open ? 'Close sidebar' : 'Open sidebar'}>
+          {open ? <X size={18} /> : <Menu size={18} />}
         </button>
       )}
 
@@ -62,7 +52,7 @@ const Sidebar = ({ open, setOpen, isMobile }) => {
         </button>
       )}
       
-      <nav className={`flex flex-col gap-2 ${!open && !isMobile ? 'items-center' : ''}`}>
+      <nav className={`sidebar-nav flex flex-col gap-2 ${!open && !isMobile ? 'items-center' : ''}`}>
         {navItems.map(({ to, label, icon: Icon }) => {
           const isActive = location.pathname === to;
           return (
@@ -71,34 +61,18 @@ const Sidebar = ({ open, setOpen, isMobile }) => {
               to={to}
               onClick={handleLinkClick}
               title={!open && !isMobile ? label : ''}
-              className={`
-                flex items-center gap-3 p-3 rounded-lg transition-all duration-200 relative group
-                ${!open && !isMobile ? 'justify-center' : ''}
-                ${isActive 
-                  ? 'bg-sidebar-active shadow-lg shadow-sidebar-active/20 scale-105 sidebar-active-pulse' 
-                  : 'text-muted-foreground hover:text-sidebar-text hover:bg-sidebar-hover/50'
-                }
-              `}
+              className={`transition-all duration-200 relative group ${!open && !isMobile ? 'justify-center' : ''} ${isActive ? 'active' : ''}`}
             >
               <Icon 
                 size={20} 
-                className={`${isActive ? 'text-sidebar-active-text' : ''} transition-all duration-200 ${isActive ? 'scale-110' : ''}`}
+                className={`transition-all duration-200 ${isActive ? 'scale-110' : ''}`}
               />
               {(open || isMobile) && (
-                <span className={`font-medium transition-colors ${isActive ? 'text-sidebar-active-text' : ''}`}>
+                <span className={`font-medium transition-colors`}>
                   {label}
                 </span>
               )}
-              {/* Active indicator - vertical line for expanded, dot for collapsed */}
-              {isActive && (
-                <>
-                  {(open || isMobile) ? (
-                    <div className="absolute left-0 top-0 w-1 h-full bg-sidebar-active-text rounded-r-full" />
-                  ) : (
-                    <div className="absolute -right-1 top-1/2 transform -translate-y-1/2 w-2 h-2 bg-sidebar-active-text rounded-full" />
-                  )}
-                </>
-              )}
+              {/* Active indicator is handled by CSS .active */}
             </Link>
           );
         })}

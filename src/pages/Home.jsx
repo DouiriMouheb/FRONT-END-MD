@@ -30,7 +30,7 @@ const Home = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
-        <div className="bg-background border border-border rounded-lg p-4 sm:p-6 shadow-sm">
+        <div className="panel bg-panel border border-border rounded-lg p-4 sm:p-6 shadow-sm">
           <h2 className="text-lg sm:text-xl font-semibold mb-3">Features</h2>
           <ul className="space-y-2 text-muted-foreground">
             <li className="flex items-center gap-2">
@@ -60,21 +60,11 @@ const Home = () => {
           </ul>
         </div>
 
-        <div className="bg-background border border-border rounded-lg p-4 sm:p-6 shadow-sm">
+        <div className="panel bg-panel border border-border rounded-lg p-4 sm:p-6 shadow-sm">
           <h2 className="text-lg sm:text-xl font-semibold mb-3">Quick Actions</h2>
           <div className="space-y-3">
-            <button
-              onClick={handleShowToast}
-              className="w-full px-4 py-2 bg-success text-success-foreground rounded-lg hover:opacity-90 transition-opacity text-sm sm:text-base"
-            >
-              Show Toast Notification
-            </button>
-            <button
-              onClick={() => setModalOpen(true)}
-              className="w-full px-4 py-2 bg-primary border border-border text-primary-foreground rounded-lg hover:bg-muted transition-colors text-sm sm:text-base"
-            >
-              Open Modal Demo
-            </button>
+            <button onClick={handleShowToast} className="btn btn-primary w-full">Show Toast Notification</button>
+            <button onClick={() => setModalOpen(true)} className="btn w-full">Open Modal Demo</button>
             <div className="pt-2">
               <ThemeToggle className="w-full justify-center sm:hidden" />
             </div>

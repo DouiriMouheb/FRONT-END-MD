@@ -1,159 +1,120 @@
 
 @import "tailwindcss";
 
+/* Industrial / professional color palette using CSS variables */
 :root {
-  /* Base theme colors */
-  --primary: 220 14% 96%;
-  --primary-foreground: 220.9 39.3% 11%; /* Very dark blue-gray for text */
-  
-  --secondary: 220 14% 96%;
-  --secondary-foreground: 220.9 39.3% 11%;
-  
-  --sidebar-bg: 224 71.4% 4.1%;
-  --sidebar-text: 210 20% 98%;
-  --sidebar-hover: 0 84.2% 60.2%;
-  --sidebar-active: 0 72% 51%; /* Distinct active state color */
-  --sidebar-active-text: 0 0% 100%; /* White text for active state in light theme */
-  
-  --background: 0 0% 100%; /* Pure white */
-  --foreground: 224 71.4% 4.1%; /* Dark blue-gray for main text */
-  
-  --muted: 220 14.3% 95.9%;
-  --muted-foreground: 220 8.9% 46.1%;
-  
-  --border: 220 13% 91%;
-  --input: 220 13% 91%;
-  --ring: 224 71.4% 4.1%;
-  
-  /* Semantic colors for better clarity */
-  --success: 142 76% 36%; /* Green for success states */
-  --success-foreground: 355.7 100% 97.3%; /* Light text for success */
-  
-  --error: 0 84.2% 60.2%; /* Red for error states */
-  --error-foreground: 0 0% 100%; /* White text for error */
-  
-  --warning: 47.9 95.8% 53.1%; /* Amber/Yellow for warnings */
-  --warning-foreground: 26 83.3% 14.1%; /* Dark text for warning */
-  
-  --info: 221.2 83.2% 53.3%; /* Blue for info states */
-  --info-foreground: 210 20% 98%; /* Light text for info */
+  --bg: 222 13% 98%;           /* very light gray */
+  --panel: 220 12% 96%;        /* panel background */
+  --muted: 220 10% 88%;
+  --text: 215 10% 12%;         /* charcoal */
+  --subtle: 215 8% 46%;        /* muted text */
+
+  --accent: 214 36% 46%;       /* steel blue */
+  --accent-foreground: 210 100% 98%;
+
+  --success: 142 58% 35%;
+  --error: 0 74% 46%;
+  --warning: 40 90% 55%;
+
+  --border: 220 12% 90%;
+  --input: 220 12% 94%;
 }
 
-/* Dark theme colors */
+/* Dark theme adjustments */
 .dark {
-  --primary: 220.9 39.3% 11%;
-  --primary-foreground: 210 20% 98%; /* Light text for dark themes */
-  
-  --secondary: 215 27.9% 16.9%;
-  --secondary-foreground: 210 20% 98%;
-  
-  --sidebar-bg: 224 71.4% 4.1%;
-  --sidebar-text: 210 20% 98%;
-  --sidebar-hover: 0 84.2% 60.2%;
-  --sidebar-active: 0 72% 51%; /* Consistent active state color */
-  --sidebar-active-text: 210 20% 98%; /* Light text for active state in dark theme */
-  
-  --background: 224 71.4% 4.1%; /* Very dark blue-gray */
-  --foreground: 210 20% 98%; /* Light gray for text */
-  
-  --muted: 215 27.9% 16.9%;
-  --muted-foreground: 217.9 10.6% 64.9%;
-  
-  --border: 215 27.9% 16.9%;
-  --input: 215 27.9% 16.9%;
-  --ring: 216 12.2% 83.9%;
-  
-  /* Semantic colors adjusted for dark theme */
-  --success: 142 70% 45%; /* Slightly brighter green for dark mode */
-  --success-foreground: 355.7 100% 97.3%;
-  
-  --error: 0 62.8% 30.6%; /* Darker red for dark mode */
-  --error-foreground: 0 85.7% 97.3%;
-  
-  --warning: 47.9 95.8% 53.1%; /* Keep warning bright */
-  --warning-foreground: 26 83.3% 14.1%;
-  
-  --info: 217.2 91.2% 59.8%; /* Brighter blue for dark mode */
-  --info-foreground: 222.2 84% 4.9%;
+  --bg: 220 16% 6%;
+  --panel: 220 16% 8%;
+  --muted: 220 10% 12%;
+  --text: 210 12% 96%;
+  --subtle: 215 8% 70%;
+
+  --accent: 210 30% 58%;
+  --accent-foreground: 210 20% 98%;
+
+  --success: 142 60% 40%;
+  --error: 0 62% 40%;
+  --warning: 40 90% 55%;
+
+  --border: 220 12% 12%;
+  --input: 220 12% 10%;
 }
 
+/* Base typography and layout */
 body {
-  font-family: 'DM Sans', sans-serif;
-  background-color: hsl(var(--background));
-  color: hsl(var(--foreground));
-  /* Prevent horizontal scroll on mobile */
-  overflow-x: hidden;
-  /* Improve text rendering */
+  font-family: Inter, 'DM Sans', ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  background-color: hsl(var(--bg));
+  color: hsl(var(--text));
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* Smooth theme transitions */
-  transition: background-color 0.3s ease, color 0.3s ease;
+  overflow-x: hidden;
 }
 
-/* Ensure smooth transitions for all theme-based elements */
-* {
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+* { box-sizing: border-box; }
+
+/* Smooth, subtle transitions for UI elements */
+:where(button,input,select,textarea) {
+  transition: background-color .18s ease, color .18s ease, border-color .18s ease, box-shadow .18s ease;
 }
 
-/* Custom animations for enhanced UX */
-@layer utilities {
-  .fade-in {
-    animation: fadeIn 0.3s ease-in-out;
-  }
-  
-  .slide-up {
-    animation: slideUp 0.3s ease-out;
-  }
-  
-  .pulse-slow {
-    animation: pulse 3s infinite;
-  }
-  
-  .sidebar-active-pulse {
-    animation: sidebarPulse 2s infinite;
-  }
-
-  /* Mobile-first responsive utilities */
-  .safe-area-inset {
-    padding-top: env(safe-area-inset-top);
-    padding-bottom: env(safe-area-inset-bottom);
-  }
-  
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(4px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  
-  @keyframes slideUp {
-    from { 
-      opacity: 0; 
-      transform: translateY(20px);
-    }
-    to { 
-      opacity: 1; 
-      transform: translateY(0);
-    }
-  }
-  
-  @keyframes sidebarPulse {
-    0%, 100% { 
-      box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
-    }
-    50% { 
-      box-shadow: 0 0 0 4px rgba(239, 68, 68, 0);
-    }
-  }
+/* Utility: content wrapper used in layouts */
+.content {
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
+
+/* Standard button system */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .5rem .75rem;
+  border-radius: .5rem;
+  border: 1px solid transparent;
+  background: hsl(var(--panel));
+  color: hsl(var(--text));
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn:disabled { opacity: .6; cursor: not-allowed; }
+.btn-primary { background: hsl(var(--accent)); color: hsl(var(--accent-foreground)); border-color: color-mix(in srgb, hsl(var(--accent)) 88%, transparent); }
+.btn-ghost { background: transparent; border-color: transparent; }
+.btn-destructive { background: hsl(var(--error)); color: white; }
+
+/* Form controls */
+.input {
+  padding: .5rem .5rem;
+  border-radius: .375rem;
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--input));
+  color: hsl(var(--text));
+}
+.input:focus { outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, hsl(var(--accent)) 12%, transparent); }
+
+/* Table niceties */
+.table-wrapper { overflow: auto; border-radius: .5rem; border: 1px solid hsl(var(--border)); }
+table.app-table { width: 100%; border-collapse: collapse; background: transparent; }
+table.app-table thead th { position: sticky; top: 0; background: hsl(var(--panel)); z-index: 1; border-bottom: 1px solid hsl(var(--border)); }
+table.app-table th, table.app-table td { padding: .6rem .75rem; border-bottom: 1px solid hsl(var(--border)); text-align: left; }
+table.app-table tbody tr:hover { background: color-mix(in srgb, hsl(var(--panel)) 90%, hsl(var(--bg))); }
+table.app-table tbody tr:nth-child(even) { background: color-mix(in srgb, hsl(var(--panel)) 96%, hsl(var(--bg))); }
+
+/* Modal tweaks */
+.modal-card { border-radius: .75rem; border: 1px solid hsl(var(--border)); background: hsl(var(--panel)); }
+.modal-header { display:flex; align-items:center; justify-content:space-between; gap:1rem; }
+.modal-close { background: transparent; border: none; padding: .25rem; border-radius: .375rem; cursor: pointer; }
+.modal-close:hover { background: color-mix(in srgb, hsl(var(--panel)) 88%, hsl(var(--bg))); }
+
+/* Sidebar small refinements */
+.sidebar { width: 16rem; background: hsl(var(--panel)); border-right: 1px solid hsl(var(--border)); }
+.sidebar-compact { width: 4rem; }
+.sidebar-nav a { display:flex; align-items:center; gap:.75rem; padding:.55rem; border-radius:.5rem; }
+.sidebar-nav a.active { background: color-mix(in srgb, hsl(var(--accent)) 94%, hsl(var(--panel))); border-left: 3px solid hsl(var(--accent)); color: hsl(var(--accent)); font-weight:700; }
 
 /* Improve touch targets for mobile */
 @media (max-width: 768px) {
-  button, [role="button"], input, select, textarea {
-    min-height: 44px;
-  }
+  .btn { min-height: 44px; }
 }
+
