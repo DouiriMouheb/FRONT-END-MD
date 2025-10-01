@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../components/SideBar';
+import { Menu } from 'lucide-react';
 
 const MainLayout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -28,6 +29,7 @@ const MainLayout = ({ children }) => {
 
   return (
     <div className="bg-background min-h-screen">
+      {/* Mobile open button removed; bottom navigation bar is used on small screens */}
       {/* Mobile overlay */}
       {isMobile && sidebarOpen && (
         <div 
@@ -41,7 +43,7 @@ const MainLayout = ({ children }) => {
       <main className={`
         min-h-screen transition-all duration-300 bg-muted/30
         ${isMobile 
-          ? 'p-4' 
+          ? 'p-4 pb-20' 
           : `p-6 ${sidebarOpen ? 'ml-64' : 'ml-16'}`
         }
       `}>

@@ -22,13 +22,13 @@
 
 /* Dark theme adjustments */
 .dark {
-  --bg: 220 16% 6%;
-  --panel: 220 16% 8%;
-  --muted: 220 10% 12%;
-  --text: 210 12% 96%;
-  --subtle: 215 8% 70%;
+  --bg: 220 10% 8%;        /* neutral charcoal */
+  --panel: 220 10% 10%;
+  --muted: 220 10% 14%;
+  --text: 210 8% 96%;
+  --subtle: 215 8% 72%;
 
-  --accent: 210 30% 58%;
+  --accent: 220 6% 78%;    /* subdued accent in dark */
   --accent-foreground: 210 20% 98%;
 
   --success: 142 60% 40%;
@@ -38,6 +38,14 @@
   --border: 220 12% 12%;
   --input: 220 12% 10%;
 }
+
+/* icon color token: defaults to text color but can be overridden */
+:root, .dark {
+  --icon: var(--text);
+}
+
+/* Ensure svg icons follow the icon color token and don't get a bluish tint */
+svg { color: hsl(var(--icon)); }
 
 /* Base typography and layout */
 body {
@@ -85,7 +93,9 @@ body {
 
 /* Form controls */
 .input {
-  padding: .5rem .5rem;
+  /* Only set vertical padding so horizontal padding utilities (pl-*, pr-*) win */
+  padding-top: .5rem;
+  padding-bottom: .5rem;
   border-radius: .375rem;
   border: 1px solid hsl(var(--border));
   background: hsl(var(--input));

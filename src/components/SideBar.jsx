@@ -10,49 +10,18 @@ const navItems = [
 
 const Sidebar = ({ open, setOpen, isMobile }) => {
   const location = useLocation();
-  
+
   const handleLinkClick = () => {
-    // Auto-close sidebar on mobile when navigating
+    // Auto-close any overlay sidebar on mobile when navigating (no-op for bottom bar)
     if (isMobile && open) {
       setOpen(false);
     }
   };
 
-  return (
-    <aside className={`fixed h-screen z-40 left-0 top-0 transition-all duration-300 ${isMobile ? (open ? 'translate-x-0' : '-translate-x-full') : ''} ${open || isMobile ? 'sidebar' : 'sidebar sidebar-compact'} p-4`}> 
-      {/* Mobile header with close button */}
-      {isMobile && open && (
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-semibold text-sidebar-text">Menu</h2>
-          <button
-            className="flex justify-center items-center w-10 h-10 bg-muted rounded text-sidebar-text hover:bg-sidebar-hover transition-colors"
-            onClick={() => setOpen(false)}
-            aria-label="Close sidebar"
-          >
-            <X size={20} />
-          </button>
-        </div>
-      )}
-
-      {/* Desktop toggle button */}
-      {!isMobile && (
-        <button className="btn btn-ghost mb-6 self-start" onClick={() => setOpen(!open)} aria-label={open ? 'Close sidebar' : 'Open sidebar'}>
-          {open ? <X size={18} /> : <Menu size={18} />}
-        </button>
-      )}
-
-      {/* Mobile menu button */}
-      {isMobile && !open && (
-        <button
-          className="fixed top-4 left-4 z-50 flex justify-center items-center w-12 h-12 bg-sidebar-bg rounded-lg text-sidebar-text hover:bg-sidebar-hover transition-colors shadow-lg"
-          onClick={() => setOpen(true)}
-          aria-label="Open sidebar"
-        >
-          <Menu size={20} />
-        </button>
-      )}
-      
-      <nav className={`sidebar-nav flex flex-col gap-2 ${!open && !isMobile ? 'items-center' : ''}`}>
+  // Mobile: render a bottom nav bar always visible
+  if (isMobile) {
+    return (
+      <nav style={{ backgroundColor: 'hsl(var(--panel))' }} className="fixed bottom-0 left-0 right-0 z-50 border-t border-border px-2 py-2 flex items-center justify-around md:hidden">
         {navItems.map(({ to, label, icon: Icon }) => {
           const isActive = location.pathname === to;
           return (
@@ -60,19 +29,44 @@ const Sidebar = ({ open, setOpen, isMobile }) => {
               key={to}
               to={to}
               onClick={handleLinkClick}
-              title={!open && !isMobile ? label : ''}
-              className={`transition-all duration-200 relative group ${!open && !isMobile ? 'justify-center' : ''} ${isActive ? 'active' : ''}`}
+              className={`flex flex-col items-center gap-1 text-sm w-20 py-1 rounded ${isActive ? 'text-accent font-semibold' : 'text-muted-foreground'}`}
+              aria-current={isActive ? 'page' : undefined}
+            >
+              <Icon size={20} className={`${isActive ? 'text-accent' : ''}`} />
+              <span className="truncate text-xs">{label}</span>
+            </Link>
+          );
+        })}
+      </nav>
+    );
+  }
+
+  // Desktop / large screens: existing sidebar behavior
+  return (
+    <aside className={`fixed h-screen z-40 left-0 top-0 transition-all duration-300 ${open ? 'sidebar' : 'sidebar sidebar-compact'} p-4`}> 
+      {/* Desktop toggle button */}
+      <button className="btn btn-ghost mb-6 self-start" onClick={() => setOpen(!open)} aria-label={open ? 'Close sidebar' : 'Open sidebar'}>
+        {open ? <X size={18} /> : <Menu size={18} />}
+      </button>
+
+      <nav className={`sidebar-nav flex flex-col gap-2 ${!open ? 'items-center' : ''}`}>
+        {navItems.map(({ to, label, icon: Icon }) => {
+          const isActive = location.pathname === to;
+          return (
+            <Link
+              key={to}
+              to={to}
+              onClick={handleLinkClick}
+              title={!open ? label : ''}
+              className={`transition-all duration-200 relative group ${!open ? 'justify-center' : ''} ${isActive ? 'active' : ''}`}
             >
               <Icon 
                 size={20} 
                 className={`transition-all duration-200 ${isActive ? 'scale-110' : ''}`}
               />
-              {(open || isMobile) && (
-                <span className={`font-medium transition-colors`}>
-                  {label}
-                </span>
+              {open && (
+                <span className={`font-medium transition-colors`}>{label}</span>
               )}
-              {/* Active indicator is handled by CSS .active */}
             </Link>
           );
         })}

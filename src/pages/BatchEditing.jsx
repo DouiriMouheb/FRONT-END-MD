@@ -20,6 +20,7 @@ export default function BatchEditing() {
   const [pageSize, setPageSize] = useState(5);
   const [currentPage, setCurrentPage] = useState(1);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   const dirtyRows = useMemo(() => rows.filter(r => r._dirty), [rows]);
   const selectedCount = useMemo(() => rows.filter(r => r._selected).length, [rows]);
@@ -70,6 +71,19 @@ export default function BatchEditing() {
   useEffect(() => { if (currentPage > totalPages) setCurrentPage(1); }, [filteredRows.length, pageSize, totalPages]);
   const visibleRows = useMemo(() => { const start = (currentPage - 1) * pageSize; return filteredRows.slice(start, start + pageSize); }, [filteredRows, currentPage, pageSize]);
 
+  // Detect small / mobile screens and show a friendly message instead of the full table.
+  // Use the same breakpoint as MainLayout (window.innerWidth < 768) so sidebar behaviour stays consistent.
+  useEffect(() => {
+    const checkIsMobile = () => {
+      if (typeof window === 'undefined') return setIsMobile(false);
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkIsMobile();
+    window.addEventListener('resize', checkIsMobile);
+    return () => window.removeEventListener('resize', checkIsMobile);
+  }, []);
+
   async function handleSave() {
     if (dirtyRows.length === 0) { toast('No changes to save.'); return; }
     setSaving(true);
@@ -95,9 +109,22 @@ export default function BatchEditing() {
   function deleteSelected() { setShowDeleteModal(true); }
   function confirmDelete() { const toDelete = rows.filter(r => r._selected); setRows(prev => prev.filter(r => !r._selected)); setShowDeleteModal(false); toast.success(`${toDelete.length} row(s) deleted`); }
 
+  // When on small screens, show a short message advising to use a larger device
+  if (isMobile) {
+    return (
+      <div className="p-6 flex items-center justify-center h-full" style={{ minHeight: '200px' }}>
+        <div className="max-w-sm text-center px-4">
+          <h2 className="text-lg font-semibold mb-2">Batch editing not available on small screens</h2>
+          <p className="text-sm text-muted-foreground mb-4">This page is not optimized for mobile devices yet. Please open this tool on a tablet or desktop for the best experience.</p>
+          <div className="text-xs text-muted-foreground">Tip: rotate your device or use a larger screen to continue.</div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="p-6" style={{background: 'transparent'}}>
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-3">
         <h1 className="text-2xl font-semibold text-foreground">Batch Editing</h1>
         <div className="flex items-center gap-3">
           <span className="text-sm text-subtle">{dirtyRows.length} unsaved change(s)</span>
@@ -113,7 +140,7 @@ export default function BatchEditing() {
       <div className="mb-4">
         <div className="relative w-full sm:w-1/2">
           <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-            <Search size={16} className="text-subtle" />
+            <Search size={16} />
           </div>
           <input type="text" placeholder="Search name, category, date, amount, description..." value={searchQuery} onChange={e => { setSearchQuery(e.target.value); setCurrentPage(1); }} className="input w-full pl-10 pr-3" />
         </div>
@@ -167,7 +194,7 @@ export default function BatchEditing() {
                                   <span className="text-sm text-foreground truncate">{(a.file && a.file.name) || a.name || 'file'}</span>
                                   <div className="flex items-center gap-1 ml-2">
                                     <button onClick={() => handleDownloadAttachment(row.id, a.id)} className="p-1 rounded hover:bg-muted/10" aria-label={`Download ${(a.file && a.file.name) || a.name || 'file'}`}>
-                                      <Download size={16} className="text-muted-foreground" />
+                                      <Download size={16} />
                                     </button>
                                     <button onClick={() => handleRemoveAttachment(row.id, a.id)} className="p-1 rounded hover:bg-red-600/10" aria-label={`Remove ${(a.file && a.file.name) || a.name || 'file'}`}>
                                       <span className="text-red-600 font-bold">×</span>
@@ -189,7 +216,7 @@ export default function BatchEditing() {
         </table>
       </div>
 
-      <div className="mt-3 flex items-center justify-between">
+      <div className="mt-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div className="flex items-center gap-2">
           <label className="text-sm">Page size:</label>
           <select value={pageSize} onChange={e => { setPageSize(Number(e.target.value)); setCurrentPage(1); }} className="px-2 py-1 border border-border rounded">
