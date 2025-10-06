@@ -175,6 +175,35 @@ table.excel-table {
   color: hsl(var(--text));
 }
 
+/* Sortable column headers */
+.excel-sortable {
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.15s;
+}
+
+.excel-sortable:hover {
+  background: linear-gradient(to bottom, #e9ecef 0%, #dee2e6 100%);
+}
+
+.dark .excel-sortable:hover {
+  background: linear-gradient(to bottom, hsl(var(--panel)) 0%, hsl(var(--muted)) 100%);
+}
+
+.excel-sortable:active {
+  background: linear-gradient(to bottom, #dee2e6 0%, #ced4da 100%);
+}
+
+.dark .excel-sortable:active {
+  background: linear-gradient(to bottom, hsl(var(--muted)) 0%, hsl(var(--border)) 100%);
+}
+
+.excel-header-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
 .excel-row-header {
   text-align: center;
   background: linear-gradient(to right, #f8f9fa 0%, #e9ecef 100%);
@@ -403,4 +432,123 @@ table.excel-table {
 .dark .excel-subtotal-row .excel-total-value {
   color: hsl(var(--subtle));
 }
+
+/* Virtual scrolling optimizations */
+.excel-table-wrapper-virtual {
+  border: 2px solid hsl(var(--border));
+  border-radius: 0;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.dark .excel-table-wrapper-virtual {
+  background: hsl(var(--bg));
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.excel-header-row {
+  display: flex;
+  background: linear-gradient(to bottom, #f8f9fa 0%, #e9ecef 100%);
+  border-bottom: 2px solid #d0d7de;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.dark .excel-header-row {
+  background: linear-gradient(to bottom, hsl(var(--muted)) 0%, hsl(var(--panel)) 100%);
+  border-color: hsl(var(--border));
+}
+
+.excel-row-virtual {
+  display: flex;
+  border-bottom: 1px solid #d0d7de;
+  background: white;
+}
+
+.dark .excel-row-virtual {
+  border-color: hsl(var(--border));
+  background: hsl(var(--bg));
+}
+
+.excel-row-virtual:hover {
+  background: #f6f8fa;
+}
+
+.dark .excel-row-virtual:hover {
+  background: color-mix(in srgb, hsl(var(--panel)) 30%, hsl(var(--bg)));
+}
+
+.excel-row-virtual .excel-cell {
+  flex-shrink: 0;
+  border-right: 1px solid #d0d7de;
+}
+
+.dark .excel-row-virtual .excel-cell {
+  border-color: hsl(var(--border));
+}
+
+/* Column resizing */
+.excel-header-resizable {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.excel-header-content {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.excel-resize-handle {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 8px;
+  cursor: col-resize;
+  user-select: none;
+  touch-action: none;
+  background: transparent;
+  z-index: 11;
+}
+
+.excel-resize-handle:hover {
+  background: rgba(0, 123, 255, 0.3);
+  border-right: 2px solid #0969da;
+}
+
+.dark .excel-resize-handle:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-right: 2px solid hsl(var(--accent));
+}
+
+.excel-resize-handle:active {
+  background: rgba(0, 123, 255, 0.5);
+  border-right: 2px solid #0969da;
+}
+
+.dark .excel-resize-handle:active {
+  background: rgba(255, 255, 255, 0.2);
+  border-right: 2px solid hsl(var(--accent));
+}
+
+/* Cursor change during resize */
+body.resizing-column {
+  cursor: col-resize !important;
+  user-select: none;
+}
+
+body.resizing-column * {
+  cursor: col-resize !important;
+  user-select: none;
+}
+
+/* Prevent text selection during resize */
+.excel-table-wrapper-virtual.resizing {
+  user-select: none;
+}
+
 

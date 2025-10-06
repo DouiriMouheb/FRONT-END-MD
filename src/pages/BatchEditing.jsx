@@ -1,8 +1,8 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { toast } from 'react-hot-toast';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Modal from '../components/Modal';
-import { Search, Filter, RefreshCw, Database } from 'lucide-react';
+import { Search, Filter, RefreshCw, Database, ChevronUp, ChevronDown, ChevronsUpDown } from 'lucide-react';
 import { fetchBatchData, saveBatchEdits } from '../api/batchEditing';
 
 export default function BatchEditing() {
@@ -18,6 +18,20 @@ export default function BatchEditing() {
   const [isMobile, setIsMobile] = useState(false);
   const [pendingNavigation, setPendingNavigation] = useState(null);
   
+  // Column widths for resizing
+  const [columnWidths, setColumnWidths] = useState({
+    rowNumber: 50,
+    checkbox: 50,
+    name: 180,
+    category: 150,
+    date: 140,
+    amount: 120,
+    description: 200,
+  });
+  const [resizingColumn, setResizingColumn] = useState(null);
+  const resizeStartX = useRef(0);
+  const resizeStartWidth = useRef(0);
+  
   const navigate = useNavigate();
   const location = useLocation();
   
@@ -29,6 +43,10 @@ export default function BatchEditing() {
     minAmount: '',
     maxAmount: '',
   });
+  
+  // Sorting state
+  const [sortColumn, setSortColumn] = useState(null);
+  const [sortDirection, setSortDirection] = useState('asc'); // 'asc' or 'desc'
 
   const dirtyRows = useMemo(() => rows.filter(r => r._dirty), [rows]);
   const selectedCount = useMemo(() => rows.filter(r => r._selected).length, [rows]);
@@ -79,6 +97,40 @@ export default function BatchEditing() {
     toast.success('Filters cleared');
   }
 
+  // Column resizing handlers
+  function startResize(columnKey, event) {
+    event.preventDefault();
+    event.stopPropagation();
+    
+    setResizingColumn(columnKey);
+    resizeStartX.current = event.clientX;
+    resizeStartWidth.current = columnWidths[columnKey];
+    
+    document.body.classList.add('resizing-column');
+    
+    const handleMouseMove = (e) => {
+      if (resizingColumn || columnKey) {
+        const diff = e.clientX - resizeStartX.current;
+        const newWidth = Math.max(60, resizeStartWidth.current + diff); // Min width 60px
+        
+        setColumnWidths(prev => ({
+          ...prev,
+          [columnKey]: newWidth
+        }));
+      }
+    };
+    
+    const handleMouseUp = () => {
+      setResizingColumn(null);
+      document.body.classList.remove('resizing-column');
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+    
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  }
+
   function updateField(id, field, value) {
     setRows(prev => prev.map(r => r.id === id ? { ...r, [field]: value, _dirty: true, _dirtyFields: { ...(r._dirtyFields || {}), [field]: true } } : r));
   }
@@ -114,6 +166,28 @@ export default function BatchEditing() {
   function toggleSelect(id) { setRows(prev => prev.map(r => r.id === id ? { ...r, _selected: !r._selected } : r)); }
   function selectAllOnPage(checked, visibleIds) { setRows(prev => prev.map(r => visibleIds.includes(r.id) ? { ...r, _selected: checked } : r)); }
   function toggleExpand(id) { setRows(prev => prev.map(r => r.id === id ? { ...r, _expanded: !r._expanded } : r)); }
+  
+  // Handle column sorting
+  function handleSort(columnKey) {
+    if (sortColumn === columnKey) {
+      // Same column - toggle direction
+      setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
+    } else {
+      // New column - set to ascending
+      setSortColumn(columnKey);
+      setSortDirection('asc');
+    }
+  }
+  
+  // Render sort icon for column headers
+  function renderSortIcon(columnKey) {
+    if (sortColumn !== columnKey) {
+      return <ChevronsUpDown size={14} className="inline ml-1 opacity-40" />;
+    }
+    return sortDirection === 'asc' 
+      ? <ChevronUp size={14} className="inline ml-1 text-accent" />
+      : <ChevronDown size={14} className="inline ml-1 text-accent" />;
+  }
 
   const filteredRows = useMemo(() => {
     let filtered = [...rows];
@@ -144,8 +218,38 @@ export default function BatchEditing() {
       );
     }
 
+    // Apply sorting
+    if (sortColumn) {
+      filtered.sort((a, b) => {
+        let aVal = a[sortColumn];
+        let bVal = b[sortColumn];
+        
+        // Handle different data types
+        if (sortColumn === 'amount') {
+          // Numeric sorting
+          aVal = typeof aVal === 'number' ? aVal : 0;
+          bVal = typeof bVal === 'number' ? bVal : 0;
+          return sortDirection === 'asc' ? aVal - bVal : bVal - aVal;
+        } else if (sortColumn === 'date') {
+          // Date sorting
+          aVal = aVal || '';
+          bVal = bVal || '';
+          return sortDirection === 'asc' 
+            ? aVal.localeCompare(bVal) 
+            : bVal.localeCompare(aVal);
+        } else {
+          // String sorting (alphabetic)
+          aVal = (aVal || '').toString().toLowerCase();
+          bVal = (bVal || '').toString().toLowerCase();
+          return sortDirection === 'asc' 
+            ? aVal.localeCompare(bVal) 
+            : bVal.localeCompare(aVal);
+        }
+      });
+    }
+
     return filtered;
-  }, [rows, searchQuery, filters]);
+  }, [rows, searchQuery, filters, sortColumn, sortDirection]);
 
   const totalPages = Math.max(1, Math.ceil(filteredRows.length / pageSize));
   useEffect(() => { if (currentPage > totalPages) setCurrentPage(1); }, [filteredRows.length, pageSize, totalPages]);
@@ -410,19 +514,38 @@ export default function BatchEditing() {
           </div>
         </div>
       ) : (
-        <div className="excel-table-wrapper">
+        <div className={`excel-table-wrapper ${resizingColumn ? 'resizing' : ''}`}>
           <table className="excel-table" aria-label="Batch editing table">
           <thead>
             <tr>
-              <th className="excel-header excel-row-header" style={{width: '50px'}}>#</th>
-              <th className="excel-header excel-checkbox-col" style={{width: '50px'}}>
-                <input type="checkbox" checked={visibleRows.length > 0 && visibleRows.every(v => v._selected)} onChange={e => selectAllOnPage(e.target.checked, visibleRows.map(v => v.id))} aria-label="Select all rows" />
+              <th className="excel-header excel-row-header" style={{width: `${columnWidths.rowNumber}px`, position: 'relative'}}>
+                #
+                <div className="excel-resize-handle" onMouseDown={(e) => startResize('rowNumber', e)} title="Drag to resize" />
               </th>
-              <th className="excel-header" style={{minWidth: '180px'}}>Name</th>
-              <th className="excel-header" style={{minWidth: '150px'}}>Category</th>
-              <th className="excel-header" style={{minWidth: '140px'}}>Date</th>
-              <th className="excel-header" style={{minWidth: '120px'}}>Amount (€)</th>
-              <th className="excel-header" style={{minWidth: '200px'}}>Description</th>
+              <th className="excel-header excel-checkbox-col" style={{width: `${columnWidths.checkbox}px`, position: 'relative'}}>
+                <input type="checkbox" checked={visibleRows.length > 0 && visibleRows.every(v => v._selected)} onChange={e => selectAllOnPage(e.target.checked, visibleRows.map(v => v.id))} aria-label="Select all rows" />
+                <div className="excel-resize-handle" onMouseDown={(e) => startResize('checkbox', e)} title="Drag to resize" />
+              </th>
+              <th className="excel-header excel-sortable" style={{width: `${columnWidths.name}px`, position: 'relative'}} onClick={() => handleSort('name')}>
+                <span className="excel-header-content">Name {renderSortIcon('name')}</span>
+                <div className="excel-resize-handle" onMouseDown={(e) => startResize('name', e)} title="Drag to resize" />
+              </th>
+              <th className="excel-header excel-sortable" style={{width: `${columnWidths.category}px`, position: 'relative'}} onClick={() => handleSort('category')}>
+                <span className="excel-header-content">Category {renderSortIcon('category')}</span>
+                <div className="excel-resize-handle" onMouseDown={(e) => startResize('category', e)} title="Drag to resize" />
+              </th>
+              <th className="excel-header excel-sortable" style={{width: `${columnWidths.date}px`, position: 'relative'}} onClick={() => handleSort('date')}>
+                <span className="excel-header-content">Date {renderSortIcon('date')}</span>
+                <div className="excel-resize-handle" onMouseDown={(e) => startResize('date', e)} title="Drag to resize" />
+              </th>
+              <th className="excel-header excel-sortable" style={{width: `${columnWidths.amount}px`, position: 'relative'}} onClick={() => handleSort('amount')}>
+                <span className="excel-header-content">Amount (€) {renderSortIcon('amount')}</span>
+                <div className="excel-resize-handle" onMouseDown={(e) => startResize('amount', e)} title="Drag to resize" />
+              </th>
+              <th className="excel-header excel-sortable" style={{width: `${columnWidths.description}px`, position: 'relative'}} onClick={() => handleSort('description')}>
+                <span className="excel-header-content">Description {renderSortIcon('description')}</span>
+                <div className="excel-resize-handle" onMouseDown={(e) => startResize('description', e)} title="Drag to resize" />
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -432,27 +555,29 @@ export default function BatchEditing() {
               visibleRows.map((row, idx) => (
                 <React.Fragment key={row.id}>
                   <tr className="excel-row">
-                    <td className="excel-cell excel-row-number">{(currentPage - 1) * pageSize + idx + 1}</td>
-                    <td className="excel-cell excel-checkbox-cell">
+                    <td className="excel-cell excel-row-number" style={{width: `${columnWidths.rowNumber}px`}}>
+                      {(currentPage - 1) * pageSize + idx + 1}
+                    </td>
+                    <td className="excel-cell excel-checkbox-cell" style={{width: `${columnWidths.checkbox}px`}}>
                       <input type="checkbox" checked={!!row._selected} onChange={() => toggleSelect(row.id)} aria-label={`Select row ${row.id}`} />
                     </td>
-                    <td className="excel-cell">
+                    <td className="excel-cell" style={{width: `${columnWidths.name}px`}}>
                       <input type="text" value={row.name} onChange={e => updateField(row.id, 'name', e.target.value)} className={`excel-input ${row._dirtyFields?.name ? 'excel-dirty' : ''}`} aria-label={`Name for ${row.name}`} />
                     </td>
-                    <td className="excel-cell">
+                    <td className="excel-cell" style={{width: `${columnWidths.category}px`}}>
                       <select value={row.category} onChange={e => updateField(row.id, 'category', e.target.value)} className={`excel-input ${row._dirtyFields?.category ? 'excel-dirty' : ''}`} aria-label={`Category for ${row.name}`}>
                         <option>Option A</option>
                         <option>Option B</option>
                         <option>Option C</option>
                       </select>
                     </td>
-                    <td className="excel-cell">
+                    <td className="excel-cell" style={{width: `${columnWidths.date}px`}}>
                       <input type="date" value={row.date} onChange={e => updateField(row.id, 'date', e.target.value)} className={`excel-input ${row._dirtyFields?.date ? 'excel-dirty' : ''}`} aria-label={`Date for ${row.name}`} />
                     </td>
-                    <td className="excel-cell">
+                    <td className="excel-cell" style={{width: `${columnWidths.amount}px`}}>
                       <input type="number" step="0.01" value={typeof row.amount === 'number' ? row.amount : ''} onChange={e => updateField(row.id, 'amount', e.target.value === '' ? '' : parseFloat(e.target.value))} className={`excel-input ${row._dirtyFields?.amount ? 'excel-dirty' : ''}`} aria-label={`Amount in euros for ${row.name}`} />
                     </td>
-                    <td className="excel-cell">
+                    <td className="excel-cell" style={{width: `${columnWidths.description}px`}}>
                       <input type="text" value={row.description} onChange={e => updateField(row.id, 'description', e.target.value)} className={`excel-input ${row._dirtyFields?.description ? 'excel-dirty' : ''}`} aria-label={`Description for ${row.name}`} />
                     </td>
                   </tr>
