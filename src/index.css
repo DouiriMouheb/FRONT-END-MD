@@ -242,6 +242,33 @@ table.excel-table {
   background: color-mix(in srgb, hsl(var(--panel)) 30%, hsl(var(--bg)));
 }
 
+/* New row indicator */
+.excel-row-new .excel-cell {
+  background: #e6ffed;
+  border-color: #34d058;
+}
+
+.dark .excel-row-new .excel-cell {
+  background: color-mix(in srgb, hsl(var(--success)) 15%, hsl(var(--bg)));
+  border-color: hsl(var(--success));
+}
+
+.excel-row-new:hover .excel-cell {
+  background: #d4f8dd;
+}
+
+.dark .excel-row-new:hover .excel-cell {
+  background: color-mix(in srgb, hsl(var(--success)) 25%, hsl(var(--bg)));
+}
+
+.excel-row-new .excel-row-number::after {
+  content: ' NEW';
+  font-size: 9px;
+  font-weight: 700;
+  color: hsl(var(--success));
+  margin-left: 4px;
+}
+
 /* Row numbers (like Excel's left column) */
 .excel-row-number {
   text-align: center;

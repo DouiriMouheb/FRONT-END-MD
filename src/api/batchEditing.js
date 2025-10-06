@@ -68,7 +68,27 @@ export async function saveBatchEdits(payload) {
   // Here we just simulate success.
   if (typeof FormData !== 'undefined' && payload instanceof FormData) {
     // Example: you could inspect payload.get('items') if the client appended JSON under 'items'
-    return { success: true, updated: [] };
+    const items = JSON.parse(payload.get('items'));
+    const newRows = items.filter(item => item.isNew);
+    const updatedRows = items.filter(item => !item.isNew);
+    
+    console.log('📤 Saving to database:', {
+      newRows: newRows.length,
+      updatedRows: updatedRows.length,
+      total: items.length
+    });
+    
+    // In production, backend would:
+    // 1. Insert new rows (isNew: true) and return generated IDs
+    // 2. Update existing rows (isNew: false)
+    // 3. Handle file uploads from FormData
+    
+    return { 
+      success: true, 
+      created: newRows.length,
+      updated: updatedRows.length,
+      // Backend would return real IDs here: newIds: [123, 124, 125]
+    };
   }
 
   // Example of where you'd call your real API with JSON:
@@ -79,6 +99,26 @@ export async function saveBatchEdits(payload) {
   // });
   // if (!res.ok) throw new Error('Network response was not ok');
   // return res.json();
+  
+  // Handle JSON payload (no files)
+  const newRows = payload.filter(item => item.isNew);
+  const updatedRows = payload.filter(item => !item.isNew);
+  
+  console.log('📤 Saving to database:', {
+    newRows: newRows.length,
+    updatedRows: updatedRows.length,
+    total: payload.length
+  });
+  
+  // In production, backend would:
+  // 1. INSERT new rows (isNew: true) into database
+  // 2. UPDATE existing rows (isNew: false) in database
+  // 3. Return the generated IDs for new rows
 
-  return { success: true, updated: payload };
+  return { 
+    success: true, 
+    created: newRows.length,
+    updated: updatedRows.length,
+    // Backend would return real IDs here: newIds: [123, 124, 125]
+  };
 }

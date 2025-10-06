@@ -9,6 +9,7 @@ export default function BatchEditing() {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [nextTempId, setNextTempId] = useState(1); // Counter for temporary IDs
   const [searchQuery, setSearchQuery] = useState('');
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
@@ -166,6 +167,48 @@ export default function BatchEditing() {
   function toggleSelect(id) { setRows(prev => prev.map(r => r.id === id ? { ...r, _selected: !r._selected } : r)); }
   function selectAllOnPage(checked, visibleIds) { setRows(prev => prev.map(r => visibleIds.includes(r.id) ? { ...r, _selected: checked } : r)); }
   function toggleExpand(id) { setRows(prev => prev.map(r => r.id === id ? { ...r, _expanded: !r._expanded } : r)); }
+  
+  // Duplicate selected rows
+  function duplicateSelected() {
+    const selectedRows = rows.filter(r => r._selected);
+    if (selectedRows.length === 0) {
+      toast.error('Please select rows to duplicate');
+      return;
+    }
+    
+    setNextTempId(prev => prev + selectedRows.length);
+    
+    // Insert duplicates right after their original rows
+    setRows(prev => {
+      const newRows = [];
+      let tempIdCounter = nextTempId;
+      
+      prev.forEach(row => {
+        // Add the original row
+        newRows.push(row);
+        
+        // If this row was selected, add a duplicate right after it
+        if (row._selected) {
+          const newId = `temp_${tempIdCounter++}`;
+          const duplicate = {
+            ...row,
+            id: newId,
+            _selected: false,
+            _dirty: true, // Mark as dirty so it gets saved
+            _dirtyFields: { ...row._dirtyFields }, // Copy dirty fields
+            _isNew: true, // Flag to indicate this is a new row
+            _attachments: [], // Reset attachments for duplicates
+            _expanded: false,
+          };
+          newRows.push(duplicate);
+        }
+      });
+      
+      return newRows;
+    });
+    
+    toast.success(`${selectedRows.length} row(s) duplicated`);
+  }
   
   // Handle column sorting
   function handleSort(columnKey) {
@@ -406,18 +449,53 @@ export default function BatchEditing() {
     if (dirtyRows.length === 0) { toast('No changes to save.'); return; }
     setSaving(true);
     try {
+      // Separate new rows from modified rows
+      const newRows = dirtyRows.filter(r => r._isNew);
+      const modifiedRows = dirtyRows.filter(r => !r._isNew);
+      
       const hasFiles = dirtyRows.some(r => (r._attachments || []).length > 0);
       if (hasFiles && typeof FormData !== 'undefined') {
         const form = new FormData();
-        form.append('items', JSON.stringify(dirtyRows.map(({ _dirty, _attachments, ...rest }) => rest)));
+        // Send all dirty rows (both new and modified)
+        const payload = dirtyRows.map(({ _dirty, _attachments, _selected, _expanded, _dirtyFields, _isNew, ...rest }) => ({
+          ...rest,
+          isNew: _isNew || false // Flag for backend to know if it's a new row
+        }));
+        form.append('items', JSON.stringify(payload));
         dirtyRows.forEach(r => { (r._attachments || []).forEach((a) => { form.append(`files[${r.id}][]`, a.file, a.file.name); }); });
         await saveBatchEdits(form);
       } else {
-        const payload = dirtyRows.map(({ _dirty, _attachments, ...rest }) => rest);
+        // Send all dirty rows with isNew flag
+        const payload = dirtyRows.map(({ _dirty, _attachments, _selected, _expanded, _dirtyFields, _isNew, ...rest }) => ({
+          ...rest,
+          isNew: _isNew || false // Flag for backend to know if it's a new row
+        }));
         await saveBatchEdits(payload);
       }
-      setRows(prev => prev.map(r => r._dirty ? { ...r, _dirty: false, _dirtyFields: {} } : r));
-      toast.success('Changes saved');
+      
+      // After successful save, update rows:
+      // - Remove _isNew flag from new rows (they're now in DB)
+      // - Clear _dirty flags
+      // - For new rows, backend should return real IDs, but for now we'll just clear flags
+      setRows(prev => prev.map(r => {
+        if (r._dirty) {
+          return { 
+            ...r, 
+            _dirty: false, 
+            _dirtyFields: {},
+            _isNew: false // Clear the new flag after save
+          };
+        }
+        return r;
+      }));
+      
+      const saveMessage = newRows.length > 0 && modifiedRows.length > 0
+        ? `Saved ${modifiedRows.length} change(s) and created ${newRows.length} new row(s)`
+        : newRows.length > 0
+        ? `Created ${newRows.length} new row(s)`
+        : `Saved ${modifiedRows.length} change(s)`;
+      
+      toast.success(saveMessage);
     } catch (err) {
       console.error(err);
       toast.error('Failed to save changes');
@@ -466,9 +544,14 @@ export default function BatchEditing() {
             {dirtyRows.length > 0 && ` • ${dirtyRows.length} unsaved`}
           </span>
           {selectedCount > 0 && (
-            <button onClick={deleteSelected} className="btn btn-destructive">
-              Delete {selectedCount}
-            </button>
+            <>
+              <button onClick={duplicateSelected} className="btn btn-ghost border border-border">
+                Duplicate {selectedCount}
+              </button>
+              <button onClick={deleteSelected} className="btn btn-destructive">
+                Delete {selectedCount}
+              </button>
+            </>
           )}
           <button 
             onClick={handleSave} 
@@ -554,9 +637,13 @@ export default function BatchEditing() {
             ) : (
               visibleRows.map((row, idx) => (
                 <React.Fragment key={row.id}>
-                  <tr className="excel-row">
+                  <tr className={`excel-row ${row._isNew ? 'excel-row-new' : ''}`}>
                     <td className="excel-cell excel-row-number" style={{width: `${columnWidths.rowNumber}px`}}>
-                      {(currentPage - 1) * pageSize + idx + 1}
+                      {row._isNew ? (
+                        <span className="text-success font-bold" title="New row (not yet saved)">+</span>
+                      ) : (
+                        (currentPage - 1) * pageSize + idx + 1
+                      )}
                     </td>
                     <td className="excel-cell excel-checkbox-cell" style={{width: `${columnWidths.checkbox}px`}}>
                       <input type="checkbox" checked={!!row._selected} onChange={() => toggleSelect(row.id)} aria-label={`Select row ${row.id}`} />
