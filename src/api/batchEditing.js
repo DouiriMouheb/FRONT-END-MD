@@ -1,22 +1,63 @@
 /**
  * API helper for batch editing operations.
  *
- * This file provides a small client helper that the UI calls to persist
- * batch edits. Currently it simulates a successful network request with
- * a short delay. Replace the implementation with real fetch/axios calls
+ * This file provides client helpers for:
+ * - Fetching data from the database
+ * - Filtering data based on criteria
+ * - Saving batch edits back to the server
+ *
+ * Replace the simulated implementations with real fetch/axios calls
  * when a backend endpoint is available.
- *
- * Expected server contract for saving batch edits (JSON request):
- * POST /api/batch-edits
- * {
- *   items: [
- *     { id: number|string, name?: string, startDate?: 'YYYY-MM-DD', endDate?: 'YYYY-MM-DD' },
- *     ...
- *   ]
- * }
- *
- * Expected successful response: 200 OK with { success: true, updated: [...] }
  */
+
+/**
+ * Fetch all records from the database
+ * GET /api/batch-data or similar endpoint
+ */
+export async function fetchBatchData(filters = {}) {
+  // Simulate network latency
+  await new Promise(res => setTimeout(res, 800));
+
+  // In production, this would be:
+  // const params = new URLSearchParams(filters);
+  // const res = await fetch(`/api/batch-data?${params}`);
+  // if (!res.ok) throw new Error('Failed to fetch data');
+  // return res.json();
+
+  // Mock data - simulating DB response
+  const mockData = Array.from({ length: 50 }).map((_, i) => ({
+    id: i + 1,
+    name: `Item ${i + 1}`,
+    category: ['Option A', 'Option B', 'Option C'][i % 3],
+    date: `2025-10-${String((i % 28) + 1).padStart(2, '0')}`,
+    amount: Math.round((Math.random() * 10000 + 500)) / 100,
+    description: `${['First', 'Second', 'Third', 'Fourth', 'Fifth'][i % 5]} sample item`,
+    status: ['Active', 'Pending', 'Completed'][i % 3],
+    createdAt: new Date(2025, 9, (i % 28) + 1).toISOString(),
+  }));
+
+  return { data: mockData, total: mockData.length };
+}
+
+/**
+ * Apply server-side filters (in production this would be done via query params)
+ */
+export async function filterBatchData(criteria) {
+  // Simulate network latency
+  await new Promise(res => setTimeout(res, 400));
+
+  // In production:
+  // const res = await fetch('/api/batch-data/filter', {
+  //   method: 'POST',
+  //   headers: { 'Content-Type': 'application/json' },
+  //   body: JSON.stringify(criteria),
+  // });
+  // return res.json();
+
+  // For now, return all data and filter client-side
+  const { data } = await fetchBatchData();
+  return { data, total: data.length };
+}
 
 export async function saveBatchEdits(payload) {
   // Simulate latency

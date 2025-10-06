@@ -128,3 +128,279 @@ table.app-table tbody tr:nth-child(even) { background: color-mix(in srgb, hsl(va
   .btn { min-height: 44px; }
 }
 
+/* Excel-like spreadsheet styles */
+.excel-table-wrapper {
+  overflow: auto;
+  border: 2px solid hsl(var(--border));
+  border-radius: 0;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.dark .excel-table-wrapper {
+  background: hsl(var(--bg));
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+table.excel-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  font-size: 13px;
+}
+
+.dark table.excel-table {
+  background: hsl(var(--bg));
+}
+
+/* Excel-style header */
+.excel-header {
+  position: sticky;
+  top: 0;
+  background: linear-gradient(to bottom, #f8f9fa 0%, #e9ecef 100%);
+  border: 1px solid #d0d7de;
+  border-top: 1px solid #d0d7de;
+  padding: 8px 12px;
+  font-weight: 600;
+  font-size: 12px;
+  color: #24292f;
+  text-align: left;
+  z-index: 10;
+  white-space: nowrap;
+}
+
+.dark .excel-header {
+  background: linear-gradient(to bottom, hsl(var(--muted)) 0%, hsl(var(--panel)) 100%);
+  border-color: hsl(var(--border));
+  color: hsl(var(--text));
+}
+
+.excel-row-header {
+  text-align: center;
+  background: linear-gradient(to right, #f8f9fa 0%, #e9ecef 100%);
+  font-weight: 600;
+  color: #57606a;
+}
+
+.dark .excel-row-header {
+  background: linear-gradient(to right, hsl(var(--muted)) 0%, hsl(var(--panel)) 100%);
+  color: hsl(var(--subtle));
+}
+
+.excel-checkbox-col {
+  text-align: center;
+}
+
+/* Excel-style cells */
+.excel-cell {
+  border: 1px solid #d0d7de;
+  padding: 0;
+  background: white;
+  height: 32px;
+  vertical-align: middle;
+}
+
+.dark .excel-cell {
+  border-color: hsl(var(--border));
+  background: hsl(var(--bg));
+}
+
+.excel-row:hover .excel-cell {
+  background: #f6f8fa;
+}
+
+.dark .excel-row:hover .excel-cell {
+  background: color-mix(in srgb, hsl(var(--panel)) 30%, hsl(var(--bg)));
+}
+
+/* Row numbers (like Excel's left column) */
+.excel-row-number {
+  text-align: center;
+  background: linear-gradient(to right, #f8f9fa 0%, #e9ecef 100%);
+  font-weight: 600;
+  font-size: 11px;
+  color: #57606a;
+  padding: 8px;
+  position: sticky;
+  left: 0;
+  z-index: 5;
+}
+
+.dark .excel-row-number {
+  background: linear-gradient(to right, hsl(var(--muted)) 0%, hsl(var(--panel)) 100%);
+  color: hsl(var(--subtle));
+}
+
+.excel-checkbox-cell {
+  text-align: center;
+  background: #fafbfc;
+  position: sticky;
+  left: 50px;
+  z-index: 5;
+}
+
+.dark .excel-checkbox-cell {
+  background: color-mix(in srgb, hsl(var(--panel)) 50%, hsl(var(--bg)));
+}
+
+/* Excel-style inputs - borderless and fill the cell */
+.excel-input {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: transparent;
+  padding: 6px 8px;
+  font-size: 13px;
+  color: hsl(var(--text));
+  outline: none;
+  font-family: inherit;
+}
+
+.excel-input:focus {
+  background: white;
+  box-shadow: inset 0 0 0 2px #0969da;
+  position: relative;
+  z-index: 2;
+}
+
+.dark .excel-input:focus {
+  background: hsl(var(--bg));
+  box-shadow: inset 0 0 0 2px hsl(var(--accent));
+}
+
+/* Dirty/modified cells - Excel-like indicator */
+.excel-dirty {
+  background: #fff8e1;
+  position: relative;
+}
+
+.excel-dirty::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 6px 6px 0 0;
+  border-color: #f59e0b transparent transparent transparent;
+  z-index: 1;
+}
+
+.dark .excel-dirty {
+  background: color-mix(in srgb, hsl(var(--warning)) 15%, hsl(var(--bg)));
+}
+
+/* Excel-style buttons in cells */
+.excel-btn {
+  padding: 4px;
+  border: none;
+  background: transparent;
+  border-radius: 3px;
+  cursor: pointer;
+  color: hsl(var(--text));
+  transition: background 0.15s;
+}
+
+.excel-btn:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.dark .excel-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.excel-attach-cell {
+  text-align: center;
+}
+
+/* Expanded attachment row */
+.excel-expanded-row {
+  border: none;
+}
+
+.excel-expanded-cell {
+  padding: 12px;
+  background: #f6f8fa;
+  border: 1px solid #d0d7de;
+  border-top: none;
+}
+
+.dark .excel-expanded-cell {
+  background: color-mix(in srgb, hsl(var(--panel)) 20%, hsl(var(--bg)));
+  border-color: hsl(var(--border));
+}
+
+/* Freeze panes effect - keep row numbers and checkboxes visible when scrolling */
+.excel-table-wrapper {
+  position: relative;
+}
+
+.excel-row-number,
+.excel-checkbox-cell {
+  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.05);
+}
+
+.dark .excel-row-number,
+.dark .excel-checkbox-cell {
+  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Excel-style total row */
+.excel-total-row {
+  background: linear-gradient(to bottom, #f1f3f5 0%, #e9ecef 100%);
+  border-top: 2px solid #495057;
+}
+
+.dark .excel-total-row {
+  background: linear-gradient(to bottom, hsl(var(--muted)) 0%, hsl(var(--panel)) 100%);
+  border-top: 2px solid hsl(var(--accent));
+}
+
+.excel-total-cell {
+  border: 1px solid #d0d7de;
+  padding: 10px 12px;
+  font-size: 13px;
+  color: hsl(var(--text));
+}
+
+.dark .excel-total-cell {
+  border-color: hsl(var(--border));
+}
+
+.excel-total-label {
+  text-align: right;
+  font-weight: 600;
+}
+
+.excel-total-value {
+  text-align: left;
+  font-weight: 700;
+  color: #2d6a4f;
+  font-size: 14px;
+}
+
+.dark .excel-total-value {
+  color: hsl(var(--accent));
+}
+
+.excel-subtotal-row {
+  background: #f8f9fa;
+  border-top: 1px solid #dee2e6;
+}
+
+.dark .excel-subtotal-row {
+  background: color-mix(in srgb, hsl(var(--panel)) 50%, hsl(var(--bg)));
+  border-top: 1px solid hsl(var(--border));
+}
+
+.excel-subtotal-row .excel-total-value {
+  font-weight: 500;
+  font-size: 13px;
+  color: #6c757d;
+}
+
+.dark .excel-subtotal-row .excel-total-value {
+  color: hsl(var(--subtle));
+}
+
