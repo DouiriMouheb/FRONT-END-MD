@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { toast } from 'react-hot-toast';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Modal from '../components/Modal';
-import { Search, Filter, RefreshCw, Database, ChevronUp, ChevronDown, ChevronsUpDown } from 'lucide-react';
+import { Search, RefreshCw, Database, ChevronUp, ChevronDown, ChevronsUpDown } from 'lucide-react';
 import { fetchBatchData, saveBatchEdits } from '../api/batchEditing';
 
 export default function BatchEditing() {
@@ -14,7 +14,6 @@ export default function BatchEditing() {
   const [pageSize, setPageSize] = useState(20);
   const [currentPage, setCurrentPage] = useState(1);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [showFilterModal, setShowFilterModal] = useState(false);
   const [showNavigationWarning, setShowNavigationWarning] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [pendingNavigation, setPendingNavigation] = useState(null);
@@ -84,13 +83,6 @@ export default function BatchEditing() {
     }
   }
 
-  function applyFilters() {
-    // Client-side filtering based on selected filters
-    setShowFilterModal(false);
-    setCurrentPage(1);
-    toast.success('Filters applied');
-  }
-
   function clearFilters() {
     setFilters({
       progetto: '',
@@ -102,7 +94,6 @@ export default function BatchEditing() {
       minImporto: '',
       maxImporto: '',
     });
-    setShowFilterModal(false);
     toast.success('Filters cleared');
   }
 
@@ -543,50 +534,21 @@ export default function BatchEditing() {
 
   return (
     <div className="p-6" style={{background: 'transparent'}}>
-      {/* Header with action buttons */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-3">
-        <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-semibold text-foreground">Batch Editing</h1>
-          {dirtyRows.length > 0 && (
-            <span className="px-3 py-1 bg-warning/20 text-warning border border-warning/30 rounded-full text-xs font-semibold animate-pulse">
-              ⚠️ {dirtyRows.length} Unsaved
-            </span>
-          )}
-          <button 
-            onClick={loadData} 
-            disabled={loading}
-            className="btn btn-ghost p-2"
-            title="Reload data from database"
-          >
-            <RefreshCw size={18} className={loading ? 'animate-spin' : ''} />
-          </button>
-        </div>
-        <div className="flex items-center gap-3 flex-wrap">
-          <span className="text-sm text-subtle">
-            {filteredRows.length} of {rows.length} records
-            {dirtyRows.length > 0 && ` • ${dirtyRows.length} unsaved`}
+      {/* Header */}
+      <div className="flex items-center gap-3 mb-4">
+        <h1 className="text-2xl font-semibold text-foreground">Batch Editing</h1>
+        {dirtyRows.length > 0 && (
+          <span className="px-3 py-1 bg-warning/20 text-warning border border-warning/30 rounded-full text-xs font-semibold animate-pulse">
+            ⚠️ {dirtyRows.length} Unsaved
           </span>
-          {selectedCount > 0 && (
-            <>
-              <button onClick={duplicateSelected} className="btn btn-ghost border border-border">
-                Duplicate {selectedCount}
-              </button>
-              <button onClick={deleteSelected} className="btn btn-destructive">
-                Delete {selectedCount}
-              </button>
-            </>
-          )}
-          <button 
-            onClick={handleSave} 
-            disabled={saving || dirtyRows.length === 0} 
-            className={`btn btn-primary ${saving ? 'opacity-80' : ''}`}
-          >
-            {saving ? 'Saving…' : `Save ${dirtyRows.length > 0 ? `(${dirtyRows.length})` : 'changes'}`}
-          </button>
-        </div>
+        )}
+        <span className="text-sm text-subtle ml-auto">
+          {filteredRows.length} of {rows.length} records
+          {dirtyRows.length > 0 && ` • ${dirtyRows.length} unsaved`}
+        </span>
       </div>
 
-      {/* Search and Filter Bar */}
+      {/* Search and Action Bar */}
       <div className="mb-4 flex flex-col gap-3">
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
@@ -601,16 +563,37 @@ export default function BatchEditing() {
               className="input w-full pl-10 pr-3" 
             />
           </div>
-          <button 
-            onClick={() => setShowFilterModal(true)}
-            className="btn btn-ghost border border-border whitespace-nowrap"
-          >
-            <Filter size={16} />
-            <span>Advanced</span>
-            {(filters.minImporto || filters.maxImporto) && (
-              <span className="ml-1 px-2 py-0.5 bg-accent text-accent-foreground rounded-full text-xs">Active</span>
+          
+          {/* Action Buttons */}
+          <div className="flex items-center gap-2 flex-wrap">
+            <button 
+              onClick={loadData} 
+              disabled={loading}
+              className="btn btn-ghost p-2"
+              title="Reload data from database"
+            >
+              <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
+            </button>
+            
+            {selectedCount > 0 && (
+              <>
+                <button onClick={duplicateSelected} className="btn btn-warning whitespace-nowrap text-xs">
+                  Duplicate ({selectedCount})
+                </button>
+                <button onClick={deleteSelected} className="btn btn-destructive whitespace-nowrap text-xs">
+                  Delete ({selectedCount})
+                </button>
+              </>
             )}
-          </button>
+            
+            <button 
+              onClick={handleSave} 
+              disabled={saving || dirtyRows.length === 0} 
+              className={`btn btn-primary whitespace-nowrap text-xs ${saving ? 'opacity-80' : ''}`}
+            >
+              {saving ? 'Saving…' : `Save ${dirtyRows.length > 0 ? `(${dirtyRows.length})` : ''}`}
+            </button>
+          </div>
         </div>
         
         {/* Quick Filter Dropdowns */}
@@ -681,63 +664,6 @@ export default function BatchEditing() {
             ))}
           </select>
         </div>
-
-        {/* Active Filters Indicator */}
-        {(filters.progetto || filters.workPackage || filters.attivita || filters.tipoSpessa || filters.tipoAttivita || filters.tipoCosto || filters.minImporto || filters.maxImporto) && (
-          <div className="flex items-center gap-2 text-sm">
-            <span className="text-muted-foreground">Active filters:</span>
-            <div className="flex flex-wrap gap-2">
-              {filters.progetto && (
-                <span className="px-2 py-1 bg-accent/20 text-accent rounded-md flex items-center gap-1">
-                  Progetto: {filters.progetto}
-                  <button onClick={() => setFilters(f => ({ ...f, progetto: '' }))} className="hover:text-destructive">×</button>
-                </span>
-              )}
-              {filters.workPackage && (
-                <span className="px-2 py-1 bg-accent/20 text-accent rounded-md flex items-center gap-1">
-                  WP: {filters.workPackage}
-                  <button onClick={() => setFilters(f => ({ ...f, workPackage: '' }))} className="hover:text-destructive">×</button>
-                </span>
-              )}
-              {filters.attivita && (
-                <span className="px-2 py-1 bg-accent/20 text-accent rounded-md flex items-center gap-1">
-                  Attivita: {filters.attivita}
-                  <button onClick={() => setFilters(f => ({ ...f, attivita: '' }))} className="hover:text-destructive">×</button>
-                </span>
-              )}
-              {filters.tipoSpessa && (
-                <span className="px-2 py-1 bg-accent/20 text-accent rounded-md flex items-center gap-1">
-                  Tipo Spessa: {filters.tipoSpessa}
-                  <button onClick={() => setFilters(f => ({ ...f, tipoSpessa: '' }))} className="hover:text-destructive">×</button>
-                </span>
-              )}
-              {filters.tipoAttivita && (
-                <span className="px-2 py-1 bg-accent/20 text-accent rounded-md flex items-center gap-1">
-                  Tipo Attivita: {filters.tipoAttivita}
-                  <button onClick={() => setFilters(f => ({ ...f, tipoAttivita: '' }))} className="hover:text-destructive">×</button>
-                </span>
-              )}
-              {filters.tipoCosto && (
-                <span className="px-2 py-1 bg-accent/20 text-accent rounded-md flex items-center gap-1">
-                  Tipo Costo: {filters.tipoCosto}
-                  <button onClick={() => setFilters(f => ({ ...f, tipoCosto: '' }))} className="hover:text-destructive">×</button>
-                </span>
-              )}
-              {(filters.minImporto || filters.maxImporto) && (
-                <span className="px-2 py-1 bg-accent/20 text-accent rounded-md flex items-center gap-1">
-                  Importo: €{filters.minImporto || '0'} - €{filters.maxImporto || '∞'}
-                  <button onClick={() => setFilters(f => ({ ...f, minImporto: '', maxImporto: '' }))} className="hover:text-destructive">×</button>
-                </span>
-              )}
-              <button 
-                onClick={clearFilters}
-                className="px-2 py-1 text-xs text-destructive hover:bg-destructive/10 rounded-md"
-              >
-                Clear All
-              </button>
-            </div>
-          </div>
-        )}
       </div>
 
       {loading ? (
@@ -880,58 +806,6 @@ export default function BatchEditing() {
 
       <Modal open={showDeleteModal} title="Confirm deletion" onBackdropClick={() => setShowDeleteModal(false)} footer={(<><button onClick={() => setShowDeleteModal(false)} className="px-4 py-2 rounded bg-muted text-sidebar-text">Cancel</button><button onClick={confirmDelete} className="px-4 py-2 rounded bg-destructive text-on-destructive">Delete</button></>)}>
         <div className="py-2">Are you sure you want to delete {selectedCount} row{selectedCount > 1 ? 's' : ''}? This action cannot be undone.</div>
-      </Modal>
-
-      {/* Filter Modal */}
-      <Modal 
-        open={showFilterModal} 
-        title="Advanced Filters" 
-        onBackdropClick={() => setShowFilterModal(false)}
-        footer={(
-          <>
-            <button onClick={clearFilters} className="px-4 py-2 rounded bg-muted text-sidebar-text">
-              Clear All
-            </button>
-            <button onClick={applyFilters} className="px-4 py-2 rounded bg-accent text-accent-foreground">
-              Apply Filters
-            </button>
-          </>
-        )}
-      >
-        <div className="py-4 space-y-4">
-          <div>
-            <h4 className="text-sm font-medium mb-3">Importo Range (€)</h4>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="block text-sm font-medium mb-1">Min Importo</label>
-                <input 
-                  type="number" 
-                  step="0.01"
-                  value={filters.minImporto}
-                  onChange={e => setFilters(f => ({ ...f, minImporto: e.target.value }))}
-                  className="input w-full"
-                  placeholder="0.00"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">Max Importo</label>
-                <input 
-                  type="number" 
-                  step="0.01"
-                  value={filters.maxImporto}
-                  onChange={e => setFilters(f => ({ ...f, maxImporto: e.target.value }))}
-                  className="input w-full"
-                  placeholder="100000.00"
-                />
-              </div>
-            </div>
-          </div>
-          
-          <div className="text-sm text-muted-foreground pt-2 border-t border-border">
-            <p className="mb-2">💡 <strong>Quick Tip:</strong></p>
-            <p>Use the dropdown filters above the table for quick filtering by Progetto, Work Package, Attivita, Tipo Spessa, Tipo Attivita, and Tipo Costo.</p>
-          </div>
-        </div>
       </Modal>
 
       {/* Navigation Warning Modal */}

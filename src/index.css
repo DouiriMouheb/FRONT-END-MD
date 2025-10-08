@@ -77,19 +77,28 @@ body {
 .btn {
   display: inline-flex;
   align-items: center;
-  gap: .5rem;
-  padding: .5rem .75rem;
-  border-radius: .5rem;
+  gap: .375rem;
+  padding: .375rem .625rem;
+  border-radius: .375rem;
   border: 1px solid transparent;
   background: hsl(var(--panel));
   color: hsl(var(--text));
-  font-weight: 600;
+  font-weight: 500;
+  font-size: 0.875rem;
   cursor: pointer;
+  transition: all 0.15s ease;
 }
 .btn:disabled { opacity: .6; cursor: not-allowed; }
+.btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
+.btn:active:not(:disabled) { transform: translateY(0); }
 .btn-primary { background: hsl(var(--accent)); color: hsl(var(--accent-foreground)); border-color: color-mix(in srgb, hsl(var(--accent)) 88%, transparent); }
-.btn-ghost { background: transparent; border-color: transparent; }
+.btn-primary:hover:not(:disabled) { background: color-mix(in srgb, hsl(var(--accent)) 92%, black); }
+.btn-ghost { background: transparent; border-color: hsl(var(--border)); }
+.btn-ghost:hover:not(:disabled) { background: hsl(var(--muted)); }
 .btn-destructive { background: hsl(var(--error)); color: white; }
+.btn-destructive:hover:not(:disabled) { background: color-mix(in srgb, hsl(var(--error)) 92%, black); }
+.btn-warning { background: hsl(var(--warning)); color: hsl(215 10% 12%); border-color: color-mix(in srgb, hsl(var(--warning)) 88%, transparent); }
+.btn-warning:hover:not(:disabled) { background: color-mix(in srgb, hsl(var(--warning)) 90%, black); }
 
 /* Form controls */
 .input {
