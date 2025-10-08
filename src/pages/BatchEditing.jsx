@@ -23,11 +23,13 @@ export default function BatchEditing() {
   const [columnWidths, setColumnWidths] = useState({
     rowNumber: 50,
     checkbox: 50,
-    name: 180,
-    category: 150,
-    date: 140,
-    amount: 120,
-    description: 200,
+    progetto: 150,
+    workPackage: 150,
+    attivita: 150,
+    tipoSpessa: 150,
+    tipoAttivita: 150,
+    tipoCosto: 150,
+    importo: 120,
   });
   const [resizingColumn, setResizingColumn] = useState(null);
   const resizeStartX = useRef(0);
@@ -38,11 +40,10 @@ export default function BatchEditing() {
   
   // Filter states
   const [filters, setFilters] = useState({
-    category: '',
-    dateFrom: '',
-    dateTo: '',
-    minAmount: '',
-    maxAmount: '',
+    progetto: '',
+    workPackage: '',
+    minImporto: '',
+    maxImporto: '',
   });
   
   // Sorting state
@@ -88,11 +89,10 @@ export default function BatchEditing() {
 
   function clearFilters() {
     setFilters({
-      category: '',
-      dateFrom: '',
-      dateTo: '',
-      minAmount: '',
-      maxAmount: '',
+      progetto: '',
+      workPackage: '',
+      minImporto: '',
+      maxImporto: '',
     });
     setShowFilterModal(false);
     toast.success('Filters cleared');
@@ -236,27 +236,24 @@ export default function BatchEditing() {
     let filtered = [...rows];
 
     // Apply advanced filters
-    if (filters.category) {
-      filtered = filtered.filter(r => r.category === filters.category);
+    if (filters.progetto) {
+      filtered = filtered.filter(r => r.progetto === filters.progetto);
     }
-    if (filters.dateFrom) {
-      filtered = filtered.filter(r => r.date >= filters.dateFrom);
+    if (filters.workPackage) {
+      filtered = filtered.filter(r => r.workPackage === filters.workPackage);
     }
-    if (filters.dateTo) {
-      filtered = filtered.filter(r => r.date <= filters.dateTo);
+    if (filters.minImporto !== '') {
+      filtered = filtered.filter(r => r.importo >= parseFloat(filters.minImporto));
     }
-    if (filters.minAmount !== '') {
-      filtered = filtered.filter(r => r.amount >= parseFloat(filters.minAmount));
-    }
-    if (filters.maxAmount !== '') {
-      filtered = filtered.filter(r => r.amount <= parseFloat(filters.maxAmount));
+    if (filters.maxImporto !== '') {
+      filtered = filtered.filter(r => r.importo <= parseFloat(filters.maxImporto));
     }
 
     // Apply search query
     const q = (searchQuery || '').toString().trim().toLowerCase();
     if (q) {
       filtered = filtered.filter(r => 
-        [r.name, r.category, r.date, String(r.amount), r.description]
+        [r.progetto, r.workPackage, r.attivita, r.tipoSpessa, r.tipoAttivita, r.tipoCosto, String(r.importo)]
           .some(v => (v || '').toString().toLowerCase().includes(q))
       );
     }
@@ -268,18 +265,11 @@ export default function BatchEditing() {
         let bVal = b[sortColumn];
         
         // Handle different data types
-        if (sortColumn === 'amount') {
+        if (sortColumn === 'importo') {
           // Numeric sorting
           aVal = typeof aVal === 'number' ? aVal : 0;
           bVal = typeof bVal === 'number' ? bVal : 0;
           return sortDirection === 'asc' ? aVal - bVal : bVal - aVal;
-        } else if (sortColumn === 'date') {
-          // Date sorting
-          aVal = aVal || '';
-          bVal = bVal || '';
-          return sortDirection === 'asc' 
-            ? aVal.localeCompare(bVal) 
-            : bVal.localeCompare(aVal);
         } else {
           // String sorting (alphabetic)
           aVal = (aVal || '').toString().toLowerCase();
@@ -301,16 +291,16 @@ export default function BatchEditing() {
   // Calculate sum of visible amounts
   const visibleTotal = useMemo(() => {
     return visibleRows.reduce((sum, row) => {
-      const amount = typeof row.amount === 'number' ? row.amount : 0;
-      return sum + amount;
+      const importo = typeof row.importo === 'number' ? row.importo : 0;
+      return sum + importo;
     }, 0);
   }, [visibleRows]);
 
   // Calculate sum of all filtered amounts
   const filteredTotal = useMemo(() => {
     return filteredRows.reduce((sum, row) => {
-      const amount = typeof row.amount === 'number' ? row.amount : 0;
-      return sum + amount;
+      const importo = typeof row.importo === 'number' ? row.importo : 0;
+      return sum + importo;
     }, 0);
   }, [filteredRows]);
 
@@ -571,7 +561,7 @@ export default function BatchEditing() {
           </div>
           <input 
             type="text" 
-            placeholder="Search name, category, date, amount, description..." 
+            placeholder="Search progetto, work package, attivita, tipo spessa, tipo attivita, tipo costo, importo..." 
             value={searchQuery} 
             onChange={e => { setSearchQuery(e.target.value); setCurrentPage(1); }} 
             className="input w-full pl-10 pr-3" 
@@ -583,7 +573,7 @@ export default function BatchEditing() {
         >
           <Filter size={16} />
           <span>Filters</span>
-          {(filters.category || filters.dateFrom || filters.dateTo || filters.minAmount || filters.maxAmount) && (
+          {(filters.progetto || filters.workPackage || filters.minImporto || filters.maxImporto) && (
             <span className="ml-1 px-2 py-0.5 bg-accent text-accent-foreground rounded-full text-xs">Active</span>
           )}
         </button>
@@ -609,31 +599,39 @@ export default function BatchEditing() {
                 <input type="checkbox" checked={visibleRows.length > 0 && visibleRows.every(v => v._selected)} onChange={e => selectAllOnPage(e.target.checked, visibleRows.map(v => v.id))} aria-label="Select all rows" />
                 <div className="excel-resize-handle" onMouseDown={(e) => startResize('checkbox', e)} title="Drag to resize" />
               </th>
-              <th className="excel-header excel-sortable" style={{width: `${columnWidths.name}px`, position: 'relative'}} onClick={() => handleSort('name')}>
-                <span className="excel-header-content">Name {renderSortIcon('name')}</span>
-                <div className="excel-resize-handle" onMouseDown={(e) => startResize('name', e)} title="Drag to resize" />
+              <th className="excel-header excel-sortable" style={{width: `${columnWidths.progetto}px`, position: 'relative'}} onClick={() => handleSort('progetto')}>
+                <span className="excel-header-content">Progetto {renderSortIcon('progetto')}</span>
+                <div className="excel-resize-handle" onMouseDown={(e) => startResize('progetto', e)} title="Drag to resize" />
               </th>
-              <th className="excel-header excel-sortable" style={{width: `${columnWidths.category}px`, position: 'relative'}} onClick={() => handleSort('category')}>
-                <span className="excel-header-content">Category {renderSortIcon('category')}</span>
-                <div className="excel-resize-handle" onMouseDown={(e) => startResize('category', e)} title="Drag to resize" />
+              <th className="excel-header excel-sortable" style={{width: `${columnWidths.workPackage}px`, position: 'relative'}} onClick={() => handleSort('workPackage')}>
+                <span className="excel-header-content">Work Package {renderSortIcon('workPackage')}</span>
+                <div className="excel-resize-handle" onMouseDown={(e) => startResize('workPackage', e)} title="Drag to resize" />
               </th>
-              <th className="excel-header excel-sortable" style={{width: `${columnWidths.date}px`, position: 'relative'}} onClick={() => handleSort('date')}>
-                <span className="excel-header-content">Date {renderSortIcon('date')}</span>
-                <div className="excel-resize-handle" onMouseDown={(e) => startResize('date', e)} title="Drag to resize" />
+              <th className="excel-header excel-sortable" style={{width: `${columnWidths.attivita}px`, position: 'relative'}} onClick={() => handleSort('attivita')}>
+                <span className="excel-header-content">Attivita {renderSortIcon('attivita')}</span>
+                <div className="excel-resize-handle" onMouseDown={(e) => startResize('attivita', e)} title="Drag to resize" />
               </th>
-              <th className="excel-header excel-sortable" style={{width: `${columnWidths.amount}px`, position: 'relative'}} onClick={() => handleSort('amount')}>
-                <span className="excel-header-content">Amount (€) {renderSortIcon('amount')}</span>
-                <div className="excel-resize-handle" onMouseDown={(e) => startResize('amount', e)} title="Drag to resize" />
+              <th className="excel-header excel-sortable" style={{width: `${columnWidths.tipoSpessa}px`, position: 'relative'}} onClick={() => handleSort('tipoSpessa')}>
+                <span className="excel-header-content">Tipo Spessa {renderSortIcon('tipoSpessa')}</span>
+                <div className="excel-resize-handle" onMouseDown={(e) => startResize('tipoSpessa', e)} title="Drag to resize" />
               </th>
-              <th className="excel-header excel-sortable" style={{width: `${columnWidths.description}px`, position: 'relative'}} onClick={() => handleSort('description')}>
-                <span className="excel-header-content">Description {renderSortIcon('description')}</span>
-                <div className="excel-resize-handle" onMouseDown={(e) => startResize('description', e)} title="Drag to resize" />
+              <th className="excel-header excel-sortable" style={{width: `${columnWidths.tipoAttivita}px`, position: 'relative'}} onClick={() => handleSort('tipoAttivita')}>
+                <span className="excel-header-content">Tipo Attivita {renderSortIcon('tipoAttivita')}</span>
+                <div className="excel-resize-handle" onMouseDown={(e) => startResize('tipoAttivita', e)} title="Drag to resize" />
+              </th>
+              <th className="excel-header excel-sortable" style={{width: `${columnWidths.tipoCosto}px`, position: 'relative'}} onClick={() => handleSort('tipoCosto')}>
+                <span className="excel-header-content">Tipo Costo {renderSortIcon('tipoCosto')}</span>
+                <div className="excel-resize-handle" onMouseDown={(e) => startResize('tipoCosto', e)} title="Drag to resize" />
+              </th>
+              <th className="excel-header excel-sortable" style={{width: `${columnWidths.importo}px`, position: 'relative'}} onClick={() => handleSort('importo')}>
+                <span className="excel-header-content">Importo (€) {renderSortIcon('importo')}</span>
+                <div className="excel-resize-handle" onMouseDown={(e) => startResize('importo', e)} title="Drag to resize" />
               </th>
             </tr>
           </thead>
           <tbody>
             {filteredRows.length === 0 ? (
-              <tr><td colSpan={7} className="p-6 text-center text-muted-foreground">{searchQuery && searchQuery.trim() ? `No results found for "${searchQuery}"` : 'No rows available.'}</td></tr>
+              <tr><td colSpan={9} className="p-6 text-center text-muted-foreground">{searchQuery && searchQuery.trim() ? `No results found for "${searchQuery}"` : 'No rows available.'}</td></tr>
             ) : (
               visibleRows.map((row, idx) => (
                 <React.Fragment key={row.id}>
@@ -648,24 +646,26 @@ export default function BatchEditing() {
                     <td className="excel-cell excel-checkbox-cell" style={{width: `${columnWidths.checkbox}px`}}>
                       <input type="checkbox" checked={!!row._selected} onChange={() => toggleSelect(row.id)} aria-label={`Select row ${row.id}`} />
                     </td>
-                    <td className="excel-cell" style={{width: `${columnWidths.name}px`}}>
-                      <input type="text" value={row.name} onChange={e => updateField(row.id, 'name', e.target.value)} className={`excel-input ${row._dirtyFields?.name ? 'excel-dirty' : ''}`} aria-label={`Name for ${row.name}`} />
+                    <td className="excel-cell" style={{width: `${columnWidths.progetto}px`}}>
+                      <input type="text" value={row.progetto} onChange={e => updateField(row.id, 'progetto', e.target.value)} className={`excel-input ${row._dirtyFields?.progetto ? 'excel-dirty' : ''}`} aria-label={`Progetto for row ${row.id}`} />
                     </td>
-                    <td className="excel-cell" style={{width: `${columnWidths.category}px`}}>
-                      <select value={row.category} onChange={e => updateField(row.id, 'category', e.target.value)} className={`excel-input ${row._dirtyFields?.category ? 'excel-dirty' : ''}`} aria-label={`Category for ${row.name}`}>
-                        <option>Option A</option>
-                        <option>Option B</option>
-                        <option>Option C</option>
-                      </select>
+                    <td className="excel-cell" style={{width: `${columnWidths.workPackage}px`}}>
+                      <input type="text" value={row.workPackage} onChange={e => updateField(row.id, 'workPackage', e.target.value)} className={`excel-input ${row._dirtyFields?.workPackage ? 'excel-dirty' : ''}`} aria-label={`Work Package for row ${row.id}`} />
                     </td>
-                    <td className="excel-cell" style={{width: `${columnWidths.date}px`}}>
-                      <input type="date" value={row.date} onChange={e => updateField(row.id, 'date', e.target.value)} className={`excel-input ${row._dirtyFields?.date ? 'excel-dirty' : ''}`} aria-label={`Date for ${row.name}`} />
+                    <td className="excel-cell" style={{width: `${columnWidths.attivita}px`}}>
+                      <input type="text" value={row.attivita} onChange={e => updateField(row.id, 'attivita', e.target.value)} className={`excel-input ${row._dirtyFields?.attivita ? 'excel-dirty' : ''}`} aria-label={`Attivita for row ${row.id}`} />
                     </td>
-                    <td className="excel-cell" style={{width: `${columnWidths.amount}px`}}>
-                      <input type="number" step="0.01" value={typeof row.amount === 'number' ? row.amount : ''} onChange={e => updateField(row.id, 'amount', e.target.value === '' ? '' : parseFloat(e.target.value))} className={`excel-input ${row._dirtyFields?.amount ? 'excel-dirty' : ''}`} aria-label={`Amount in euros for ${row.name}`} />
+                    <td className="excel-cell" style={{width: `${columnWidths.tipoSpessa}px`}}>
+                      <input type="text" value={row.tipoSpessa} onChange={e => updateField(row.id, 'tipoSpessa', e.target.value)} className={`excel-input ${row._dirtyFields?.tipoSpessa ? 'excel-dirty' : ''}`} aria-label={`Tipo Spessa for row ${row.id}`} />
                     </td>
-                    <td className="excel-cell" style={{width: `${columnWidths.description}px`}}>
-                      <input type="text" value={row.description} onChange={e => updateField(row.id, 'description', e.target.value)} className={`excel-input ${row._dirtyFields?.description ? 'excel-dirty' : ''}`} aria-label={`Description for ${row.name}`} />
+                    <td className="excel-cell" style={{width: `${columnWidths.tipoAttivita}px`}}>
+                      <input type="text" value={row.tipoAttivita} onChange={e => updateField(row.id, 'tipoAttivita', e.target.value)} className={`excel-input ${row._dirtyFields?.tipoAttivita ? 'excel-dirty' : ''}`} aria-label={`Tipo Attivita for row ${row.id}`} />
+                    </td>
+                    <td className="excel-cell" style={{width: `${columnWidths.tipoCosto}px`}}>
+                      <input type="text" value={row.tipoCosto} onChange={e => updateField(row.id, 'tipoCosto', e.target.value)} className={`excel-input ${row._dirtyFields?.tipoCosto ? 'excel-dirty' : ''}`} aria-label={`Tipo Costo for row ${row.id}`} />
+                    </td>
+                    <td className="excel-cell" style={{width: `${columnWidths.importo}px`}}>
+                      <input type="number" step="0.01" value={typeof row.importo === 'number' ? row.importo : ''} onChange={e => updateField(row.id, 'importo', e.target.value === '' ? '' : parseFloat(e.target.value))} className={`excel-input ${row._dirtyFields?.importo ? 'excel-dirty' : ''}`} aria-label={`Importo in euros for row ${row.id}`} />
                     </td>
                   </tr>
                 </React.Fragment>
@@ -675,24 +675,22 @@ export default function BatchEditing() {
           <tfoot>
             <tr className="excel-total-row">
               <td className="excel-total-cell" colSpan={2}></td>
-              <td className="excel-total-cell excel-total-label" colSpan={3}>
+              <td className="excel-total-cell excel-total-label" colSpan={6}>
                 <strong>Total (visible):</strong>
               </td>
               <td className="excel-total-cell excel-total-value">
                 <strong>€{visibleTotal.toFixed(2)}</strong>
               </td>
-              <td className="excel-total-cell"></td>
             </tr>
             {filteredRows.length > visibleRows.length && (
               <tr className="excel-subtotal-row">
                 <td className="excel-total-cell" colSpan={2}></td>
-                <td className="excel-total-cell excel-total-label" colSpan={3}>
+                <td className="excel-total-cell excel-total-label" colSpan={6}>
                   <em>Total (all {filteredRows.length} filtered):</em>
                 </td>
                 <td className="excel-total-cell excel-total-value">
                   <em>€{filteredTotal.toFixed(2)}</em>
                 </td>
-                <td className="excel-total-cell"></td>
               </tr>
             )}
           </tfoot>
@@ -717,7 +715,7 @@ export default function BatchEditing() {
         </div>
       </div>
 
-      <div className="mt-4 text-sm text-muted-foreground">Tip: Edit dates directly in the table and click "Save changes" to persist via the API.</div>
+      <div className="mt-4 text-sm text-muted-foreground">Tip: Edit data directly in the table and click "Save changes" to persist via the API.</div>
 
       <Modal open={showDeleteModal} title="Confirm deletion" onBackdropClick={() => setShowDeleteModal(false)} footer={(<><button onClick={() => setShowDeleteModal(false)} className="px-4 py-2 rounded bg-muted text-sidebar-text">Cancel</button><button onClick={confirmDelete} className="px-4 py-2 rounded bg-destructive text-on-destructive">Delete</button></>)}>
         <div className="py-2">Are you sure you want to delete {selectedCount} row{selectedCount > 1 ? 's' : ''}? This action cannot be undone.</div>
@@ -741,59 +739,46 @@ export default function BatchEditing() {
       >
         <div className="py-4 space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1">Category</label>
-            <select 
-              value={filters.category} 
-              onChange={e => setFilters(f => ({ ...f, category: e.target.value }))}
+            <label className="block text-sm font-medium mb-1">Progetto</label>
+            <input 
+              type="text"
+              value={filters.progetto} 
+              onChange={e => setFilters(f => ({ ...f, progetto: e.target.value }))}
               className="input w-full"
-            >
-              <option value="">All Categories</option>
-              <option value="Option A">Option A</option>
-              <option value="Option B">Option B</option>
-              <option value="Option C">Option C</option>
-            </select>
+              placeholder="Filter by progetto"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">Work Package</label>
+            <input 
+              type="text"
+              value={filters.workPackage} 
+              onChange={e => setFilters(f => ({ ...f, workPackage: e.target.value }))}
+              className="input w-full"
+              placeholder="Filter by work package"
+            />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-medium mb-1">Date From</label>
-              <input 
-                type="date" 
-                value={filters.dateFrom}
-                onChange={e => setFilters(f => ({ ...f, dateFrom: e.target.value }))}
-                className="input w-full"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Date To</label>
-              <input 
-                type="date" 
-                value={filters.dateTo}
-                onChange={e => setFilters(f => ({ ...f, dateTo: e.target.value }))}
-                className="input w-full"
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block text-sm font-medium mb-1">Min Amount (€)</label>
+              <label className="block text-sm font-medium mb-1">Min Importo (€)</label>
               <input 
                 type="number" 
                 step="0.01"
-                value={filters.minAmount}
-                onChange={e => setFilters(f => ({ ...f, minAmount: e.target.value }))}
+                value={filters.minImporto}
+                onChange={e => setFilters(f => ({ ...f, minImporto: e.target.value }))}
                 className="input w-full"
                 placeholder="0.00"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Max Amount (€)</label>
+              <label className="block text-sm font-medium mb-1">Max Importo (€)</label>
               <input 
                 type="number" 
                 step="0.01"
-                value={filters.maxAmount}
-                onChange={e => setFilters(f => ({ ...f, maxAmount: e.target.value }))}
+                value={filters.maxImporto}
+                onChange={e => setFilters(f => ({ ...f, maxImporto: e.target.value }))}
                 className="input w-full"
                 placeholder="10000.00"
               />
