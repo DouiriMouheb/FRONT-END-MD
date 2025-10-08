@@ -11,7 +11,7 @@ export default function BatchEditing() {
   const [saving, setSaving] = useState(false);
   const [nextTempId, setNextTempId] = useState(1); // Counter for temporary IDs
   const [searchQuery, setSearchQuery] = useState('');
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(20);
   const [currentPage, setCurrentPage] = useState(1);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showFilterModal, setShowFilterModal] = useState(false);
@@ -42,6 +42,10 @@ export default function BatchEditing() {
   const [filters, setFilters] = useState({
     progetto: '',
     workPackage: '',
+    attivita: '',
+    tipoSpessa: '',
+    tipoAttivita: '',
+    tipoCosto: '',
     minImporto: '',
     maxImporto: '',
   });
@@ -91,6 +95,10 @@ export default function BatchEditing() {
     setFilters({
       progetto: '',
       workPackage: '',
+      attivita: '',
+      tipoSpessa: '',
+      tipoAttivita: '',
+      tipoCosto: '',
       minImporto: '',
       maxImporto: '',
     });
@@ -235,27 +243,40 @@ export default function BatchEditing() {
   const filteredRows = useMemo(() => {
     let filtered = [...rows];
 
-    // Apply advanced filters
+    // Apply advanced filters (but keep dirty rows visible)
     if (filters.progetto) {
-      filtered = filtered.filter(r => r.progetto === filters.progetto);
+      filtered = filtered.filter(r => r.progetto === filters.progetto || r._dirty);
     }
     if (filters.workPackage) {
-      filtered = filtered.filter(r => r.workPackage === filters.workPackage);
+      filtered = filtered.filter(r => r.workPackage === filters.workPackage || r._dirty);
+    }
+    if (filters.attivita) {
+      filtered = filtered.filter(r => r.attivita === filters.attivita || r._dirty);
+    }
+    if (filters.tipoSpessa) {
+      filtered = filtered.filter(r => r.tipoSpessa === filters.tipoSpessa || r._dirty);
+    }
+    if (filters.tipoAttivita) {
+      filtered = filtered.filter(r => r.tipoAttivita === filters.tipoAttivita || r._dirty);
+    }
+    if (filters.tipoCosto) {
+      filtered = filtered.filter(r => r.tipoCosto === filters.tipoCosto || r._dirty);
     }
     if (filters.minImporto !== '') {
-      filtered = filtered.filter(r => r.importo >= parseFloat(filters.minImporto));
+      filtered = filtered.filter(r => r.importo >= parseFloat(filters.minImporto) || r._dirty);
     }
     if (filters.maxImporto !== '') {
-      filtered = filtered.filter(r => r.importo <= parseFloat(filters.maxImporto));
+      filtered = filtered.filter(r => r.importo <= parseFloat(filters.maxImporto) || r._dirty);
     }
 
-    // Apply search query
+    // Apply search query (but keep dirty rows visible)
     const q = (searchQuery || '').toString().trim().toLowerCase();
     if (q) {
-      filtered = filtered.filter(r => 
-        [r.progetto, r.workPackage, r.attivita, r.tipoSpessa, r.tipoAttivita, r.tipoCosto, String(r.importo)]
-          .some(v => (v || '').toString().toLowerCase().includes(q))
-      );
+      filtered = filtered.filter(r => {
+        if (r._dirty) return true; // Always show dirty rows
+        return [r.progetto, r.workPackage, r.attivita, r.tipoSpessa, r.tipoAttivita, r.tipoCosto, String(r.importo)]
+          .some(v => (v || '').toString().toLowerCase().includes(q));
+      });
     }
 
     // Apply sorting
@@ -287,6 +308,18 @@ export default function BatchEditing() {
   const totalPages = Math.max(1, Math.ceil(filteredRows.length / pageSize));
   useEffect(() => { if (currentPage > totalPages) setCurrentPage(1); }, [filteredRows.length, pageSize, totalPages]);
   const visibleRows = useMemo(() => { const start = (currentPage - 1) * pageSize; return filteredRows.slice(start, start + pageSize); }, [filteredRows, currentPage, pageSize]);
+
+  // Extract unique values for filter dropdowns
+  const uniqueValues = useMemo(() => {
+    return {
+      progetto: [...new Set(rows.map(r => r.progetto).filter(Boolean))].sort(),
+      workPackage: [...new Set(rows.map(r => r.workPackage).filter(Boolean))].sort(),
+      attivita: [...new Set(rows.map(r => r.attivita).filter(Boolean))].sort(),
+      tipoSpessa: [...new Set(rows.map(r => r.tipoSpessa).filter(Boolean))].sort(),
+      tipoAttivita: [...new Set(rows.map(r => r.tipoAttivita).filter(Boolean))].sort(),
+      tipoCosto: [...new Set(rows.map(r => r.tipoCosto).filter(Boolean))].sort(),
+    };
+  }, [rows]);
 
   // Calculate sum of visible amounts
   const visibleTotal = useMemo(() => {
@@ -554,29 +587,157 @@ export default function BatchEditing() {
       </div>
 
       {/* Search and Filter Bar */}
-      <div className="mb-4 flex flex-col sm:flex-row gap-3">
-        <div className="relative flex-1">
-          <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-            <Search size={16} />
+      <div className="mb-4 flex flex-col gap-3">
+        <div className="flex flex-col sm:flex-row gap-3">
+          <div className="relative flex-1">
+            <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+              <Search size={16} />
+            </div>
+            <input 
+              type="text" 
+              placeholder="Search progetto, work package, attivita, tipo spessa, tipo attivita, tipo costo, importo..." 
+              value={searchQuery} 
+              onChange={e => { setSearchQuery(e.target.value); setCurrentPage(1); }} 
+              className="input w-full pl-10 pr-3" 
+            />
           </div>
-          <input 
-            type="text" 
-            placeholder="Search progetto, work package, attivita, tipo spessa, tipo attivita, tipo costo, importo..." 
-            value={searchQuery} 
-            onChange={e => { setSearchQuery(e.target.value); setCurrentPage(1); }} 
-            className="input w-full pl-10 pr-3" 
-          />
+          <button 
+            onClick={() => setShowFilterModal(true)}
+            className="btn btn-ghost border border-border whitespace-nowrap"
+          >
+            <Filter size={16} />
+            <span>Advanced</span>
+            {(filters.minImporto || filters.maxImporto) && (
+              <span className="ml-1 px-2 py-0.5 bg-accent text-accent-foreground rounded-full text-xs">Active</span>
+            )}
+          </button>
         </div>
-        <button 
-          onClick={() => setShowFilterModal(true)}
-          className="btn btn-ghost border border-border"
-        >
-          <Filter size={16} />
-          <span>Filters</span>
-          {(filters.progetto || filters.workPackage || filters.minImporto || filters.maxImporto) && (
-            <span className="ml-1 px-2 py-0.5 bg-accent text-accent-foreground rounded-full text-xs">Active</span>
-          )}
-        </button>
+        
+        {/* Quick Filter Dropdowns */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
+          <select 
+            value={filters.progetto} 
+            onChange={e => { setFilters(f => ({ ...f, progetto: e.target.value })); setCurrentPage(1); }}
+            className="input text-sm"
+          >
+            <option value="">All Progetti</option>
+            {uniqueValues.progetto.map(val => (
+              <option key={val} value={val}>{val}</option>
+            ))}
+          </select>
+
+          <select 
+            value={filters.workPackage} 
+            onChange={e => { setFilters(f => ({ ...f, workPackage: e.target.value })); setCurrentPage(1); }}
+            className="input text-sm"
+          >
+            <option value="">All Work Packages</option>
+            {uniqueValues.workPackage.map(val => (
+              <option key={val} value={val}>{val}</option>
+            ))}
+          </select>
+
+          <select 
+            value={filters.attivita} 
+            onChange={e => { setFilters(f => ({ ...f, attivita: e.target.value })); setCurrentPage(1); }}
+            className="input text-sm"
+          >
+            <option value="">All Attivita</option>
+            {uniqueValues.attivita.map(val => (
+              <option key={val} value={val}>{val}</option>
+            ))}
+          </select>
+
+          <select 
+            value={filters.tipoSpessa} 
+            onChange={e => { setFilters(f => ({ ...f, tipoSpessa: e.target.value })); setCurrentPage(1); }}
+            className="input text-sm"
+          >
+            <option value="">All Tipo Spessa</option>
+            {uniqueValues.tipoSpessa.map(val => (
+              <option key={val} value={val}>{val}</option>
+            ))}
+          </select>
+
+          <select 
+            value={filters.tipoAttivita} 
+            onChange={e => { setFilters(f => ({ ...f, tipoAttivita: e.target.value })); setCurrentPage(1); }}
+            className="input text-sm"
+          >
+            <option value="">All Tipo Attivita</option>
+            {uniqueValues.tipoAttivita.map(val => (
+              <option key={val} value={val}>{val}</option>
+            ))}
+          </select>
+
+          <select 
+            value={filters.tipoCosto} 
+            onChange={e => { setFilters(f => ({ ...f, tipoCosto: e.target.value })); setCurrentPage(1); }}
+            className="input text-sm"
+          >
+            <option value="">All Tipo Costo</option>
+            {uniqueValues.tipoCosto.map(val => (
+              <option key={val} value={val}>{val}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* Active Filters Indicator */}
+        {(filters.progetto || filters.workPackage || filters.attivita || filters.tipoSpessa || filters.tipoAttivita || filters.tipoCosto || filters.minImporto || filters.maxImporto) && (
+          <div className="flex items-center gap-2 text-sm">
+            <span className="text-muted-foreground">Active filters:</span>
+            <div className="flex flex-wrap gap-2">
+              {filters.progetto && (
+                <span className="px-2 py-1 bg-accent/20 text-accent rounded-md flex items-center gap-1">
+                  Progetto: {filters.progetto}
+                  <button onClick={() => setFilters(f => ({ ...f, progetto: '' }))} className="hover:text-destructive">×</button>
+                </span>
+              )}
+              {filters.workPackage && (
+                <span className="px-2 py-1 bg-accent/20 text-accent rounded-md flex items-center gap-1">
+                  WP: {filters.workPackage}
+                  <button onClick={() => setFilters(f => ({ ...f, workPackage: '' }))} className="hover:text-destructive">×</button>
+                </span>
+              )}
+              {filters.attivita && (
+                <span className="px-2 py-1 bg-accent/20 text-accent rounded-md flex items-center gap-1">
+                  Attivita: {filters.attivita}
+                  <button onClick={() => setFilters(f => ({ ...f, attivita: '' }))} className="hover:text-destructive">×</button>
+                </span>
+              )}
+              {filters.tipoSpessa && (
+                <span className="px-2 py-1 bg-accent/20 text-accent rounded-md flex items-center gap-1">
+                  Tipo Spessa: {filters.tipoSpessa}
+                  <button onClick={() => setFilters(f => ({ ...f, tipoSpessa: '' }))} className="hover:text-destructive">×</button>
+                </span>
+              )}
+              {filters.tipoAttivita && (
+                <span className="px-2 py-1 bg-accent/20 text-accent rounded-md flex items-center gap-1">
+                  Tipo Attivita: {filters.tipoAttivita}
+                  <button onClick={() => setFilters(f => ({ ...f, tipoAttivita: '' }))} className="hover:text-destructive">×</button>
+                </span>
+              )}
+              {filters.tipoCosto && (
+                <span className="px-2 py-1 bg-accent/20 text-accent rounded-md flex items-center gap-1">
+                  Tipo Costo: {filters.tipoCosto}
+                  <button onClick={() => setFilters(f => ({ ...f, tipoCosto: '' }))} className="hover:text-destructive">×</button>
+                </span>
+              )}
+              {(filters.minImporto || filters.maxImporto) && (
+                <span className="px-2 py-1 bg-accent/20 text-accent rounded-md flex items-center gap-1">
+                  Importo: €{filters.minImporto || '0'} - €{filters.maxImporto || '∞'}
+                  <button onClick={() => setFilters(f => ({ ...f, minImporto: '', maxImporto: '' }))} className="hover:text-destructive">×</button>
+                </span>
+              )}
+              <button 
+                onClick={clearFilters}
+                className="px-2 py-1 text-xs text-destructive hover:bg-destructive/10 rounded-md"
+              >
+                Clear All
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {loading ? (
@@ -702,9 +863,9 @@ export default function BatchEditing() {
         <div className="flex items-center gap-2">
           <label className="text-sm">Page size:</label>
           <select value={pageSize} onChange={e => { setPageSize(Number(e.target.value)); setCurrentPage(1); }} className="px-2 py-1 border border-border rounded">
-            <option value={5}>5</option>
-            <option value={10}>10</option>
             <option value={20}>20</option>
+            <option value={50}>50</option>
+            <option value={100}>100</option>
           </select>
         </div>
 
@@ -739,50 +900,36 @@ export default function BatchEditing() {
       >
         <div className="py-4 space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1">Progetto</label>
-            <input 
-              type="text"
-              value={filters.progetto} 
-              onChange={e => setFilters(f => ({ ...f, progetto: e.target.value }))}
-              className="input w-full"
-              placeholder="Filter by progetto"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-1">Work Package</label>
-            <input 
-              type="text"
-              value={filters.workPackage} 
-              onChange={e => setFilters(f => ({ ...f, workPackage: e.target.value }))}
-              className="input w-full"
-              placeholder="Filter by work package"
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block text-sm font-medium mb-1">Min Importo (€)</label>
-              <input 
-                type="number" 
-                step="0.01"
-                value={filters.minImporto}
-                onChange={e => setFilters(f => ({ ...f, minImporto: e.target.value }))}
-                className="input w-full"
-                placeholder="0.00"
-              />
+            <h4 className="text-sm font-medium mb-3">Importo Range (€)</h4>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-sm font-medium mb-1">Min Importo</label>
+                <input 
+                  type="number" 
+                  step="0.01"
+                  value={filters.minImporto}
+                  onChange={e => setFilters(f => ({ ...f, minImporto: e.target.value }))}
+                  className="input w-full"
+                  placeholder="0.00"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Max Importo</label>
+                <input 
+                  type="number" 
+                  step="0.01"
+                  value={filters.maxImporto}
+                  onChange={e => setFilters(f => ({ ...f, maxImporto: e.target.value }))}
+                  className="input w-full"
+                  placeholder="100000.00"
+                />
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Max Importo (€)</label>
-              <input 
-                type="number" 
-                step="0.01"
-                value={filters.maxImporto}
-                onChange={e => setFilters(f => ({ ...f, maxImporto: e.target.value }))}
-                className="input w-full"
-                placeholder="10000.00"
-              />
-            </div>
+          </div>
+          
+          <div className="text-sm text-muted-foreground pt-2 border-t border-border">
+            <p className="mb-2">💡 <strong>Quick Tip:</strong></p>
+            <p>Use the dropdown filters above the table for quick filtering by Progetto, Work Package, Attivita, Tipo Spessa, Tipo Attivita, and Tipo Costo.</p>
           </div>
         </div>
       </Modal>
