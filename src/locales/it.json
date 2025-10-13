@@ -1,0 +1,230 @@
+{
+  "nav": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "example": "Esempio",
+    "batchEditing": "Modifica Batch",
+    "messenger": "Messaggi",
+    "profile": "Profilo",
+    "logout": "Esci"
+  },
+  "profile": {
+    "title": "Impostazioni Profilo",
+    "unsavedChanges": "Modifiche Non Salvate",
+    "subtitle": "Gestisci le informazioni del tuo account",
+    "profilePicture": {
+      "title": "Foto Profilo",
+      "upload": "Carica Foto",
+      "change": "Cambia Foto",
+      "remove": "Rimuovi foto",
+      "crop": "Ritaglia Foto Profilo",
+      "recommended": "Consigliato: Immagine quadrata, almeno 400x400px",
+      "maxSize": "Dimensione massima: 5MB",
+      "errorSize": "La dimensione dell'immagine deve essere inferiore a 5MB",
+      "errorType": "Si prega di caricare un file immagine",
+      "updated": "Foto profilo aggiornata",
+      "removed": "Foto profilo rimossa",
+      "cropped": "Foto profilo ritagliata con successo"
+    },
+    "language": {
+      "title": "Lingua",
+      "select": "Seleziona Lingua",
+      "english": "Inglese",
+      "italian": "Italiano"
+    },
+    "personalInfo": {
+      "title": "Informazioni Personali",
+      "firstName": "Nome",
+      "lastName": "Cognome",
+      "email": "Email",
+      "phone": "Telefono",
+      "bio": "Biografia",
+      "firstNamePlaceholder": "Inserisci nome",
+      "lastNamePlaceholder": "Inserisci cognome",
+      "emailPlaceholder": "Inserisci email",
+      "phonePlaceholder": "Inserisci numero di telefono",
+      "bioPlaceholder": "Parlaci di te...",
+      "charactersLabel": "caratteri"
+    },
+    "password": {
+      "title": "Cambia Password",
+      "current": "Password Attuale",
+      "new": "Nuova Password",
+      "confirm": "Conferma Nuova Password",
+      "currentPlaceholder": "Inserisci password attuale",
+      "newPlaceholder": "Inserisci nuova password",
+      "confirmPlaceholder": "Conferma nuova password",
+      "requirement": "La password deve contenere almeno 8 caratteri"
+    },
+    "accountInfo": {
+      "title": "Informazioni Account",
+      "status": "Stato Account",
+      "active": "Attivo",
+      "memberSince": "Membro Dal",
+      "lastLogin": "Ultimo Accesso",
+      "accountId": "ID Account"
+    },
+    "actions": {
+      "saveChanges": "Salva Modifiche",
+      "saving": "Salvando...",
+      "discardChanges": "Annulla Modifiche",
+      "changePassword": "Cambia Password",
+      "changing": "Cambiando...",
+      "cancel": "Annulla",
+      "apply": "Applica Ritaglio"
+    },
+    "validation": {
+      "firstNameRequired": "Il nome è obbligatorio",
+      "lastNameRequired": "Il cognome è obbligatorio",
+      "emailRequired": "L'email è obbligatoria",
+      "emailInvalid": "Formato email non valido",
+      "currentPasswordRequired": "La password attuale è obbligatoria",
+      "newPasswordRequired": "La nuova password è obbligatoria",
+      "passwordTooShort": "La password deve contenere almeno 8 caratteri",
+      "confirmPasswordRequired": "Si prega di confermare la password",
+      "passwordsNoMatch": "Le password non corrispondono",
+      "fixErrors": "Si prega di correggere gli errori prima di salvare",
+      "fixPasswordErrors": "Si prega di correggere gli errori prima di cambiare la password"
+    },
+    "notifications": {
+      "profileUpdated": "Profilo aggiornato con successo!",
+      "profileUpdateFailed": "Impossibile salvare il profilo",
+      "passwordChanged": "Password cambiata con successo!",
+      "passwordChangeFailed": "Impossibile cambiare la password",
+      "changesDiscarded": "Modifiche annullate",
+      "noPasswordChanges": "Nessuna modifica alla password da salvare"
+    },
+    "crop": {
+      "zoom": "Zoom",
+      "rotation": "Rotazione",
+      "rotateLeft": "Ruota a Sinistra",
+      "rotateRight": "Ruota a Destra",
+      "resetRotation": "Ripristina Rotazione"
+    }
+  },
+  "messenger": {
+    "title": "Messaggi",
+    "conversations": "conversazione",
+    "conversations_plural": "conversazioni",
+    "active": "Attivo",
+    "search": "Cerca conversazioni...",
+    "selectConversation": "Seleziona una conversazione",
+    "chooseChat": "Scegli una chat dall'elenco per iniziare a messaggiare",
+    "activeNow": "Attivo ora",
+    "offline": "Offline",
+    "typeMessage": "Scrivi un messaggio...",
+    "sendMessage": "Invia messaggio",
+    "messageSent": "Messaggio inviato!",
+    "imageUpload": "Caricamento immagini in arrivo!",
+    "fileAttachment": "Allegato file in arrivo!",
+    "emojiPicker": "Selettore emoji in arrivo!",
+    "voiceCall": "Funzione chiamata vocale in arrivo!",
+    "videoCall": "Funzione videochiamata in arrivo!",
+    "moreOptions": "Altre opzioni in arrivo!",
+    "features": {
+      "messaging": {
+        "title": "Messaggistica in Tempo Reale",
+        "description": "Invia e ricevi messaggi con aggiornamenti istantanei e scorrimento fluido."
+      },
+      "onlineStatus": {
+        "title": "Stato Online",
+        "description": "Vedi chi è online con indicatori di presenza in tempo reale."
+      },
+      "search": {
+        "title": "Cerca e Filtra",
+        "description": "Trova rapidamente le conversazioni con la funzione di ricerca integrata."
+      }
+    }
+  },
+  "home": {
+    "title": "Benvenuto",
+    "subtitle": "Questo è un moderno template React con Vite, Tailwind CSS e una struttura di componenti pulita.",
+    "features": {
+      "title": "Caratteristiche",
+      "items": {
+        "react": "React 19 con Vite",
+        "tailwind": "Tailwind CSS con sistema di temi",
+        "router": "React Router per la navigazione",
+        "toast": "Notifiche toast",
+        "sidebar": "Layout sidebar responsive",
+        "theme": "Supporto tema Scuro/Chiaro"
+      }
+    },
+    "quickActions": {
+      "title": "Azioni Rapide",
+      "showToast": "Mostra Notifica Toast",
+      "openModal": "Apri Demo Modale"
+    },
+    "navigate": "Vai alla pagina",
+    "examplePage": "Esempio",
+    "toSeeMore": "per vedere altri componenti in azione."
+  },
+  "batchEditing": {
+    "title": "Modifica Batch",
+    "mobileTitle": "Modifica batch non disponibile su schermi piccoli",
+    "mobileDescription": "Questa pagina non è ancora ottimizzata per dispositivi mobili. Apri questo strumento su un tablet o desktop per la migliore esperienza.",
+    "mobileTip": "Suggerimento: ruota il dispositivo o usa uno schermo più grande per continuare.",
+    "unsaved": "Non Salvate",
+    "records": "record",
+    "of": "di",
+    "loading": "Caricamento dati dal database...",
+    "search": "Cerca progetto, work package, attività, tipo spessa, tipo attività, tipo costo, importo...",
+    "reloadData": "Ricarica dati dal database",
+    "duplicate": "Duplica",
+    "delete": "Elimina",
+    "save": "Salva",
+    "saving": "Salvando…",
+    "allProgetti": "Tutti i Progetti",
+    "allWorkPackages": "Tutti i Work Package",
+    "allAttivita": "Tutte le Attività",
+    "allTipoSpessa": "Tutti i Tipo Spessa",
+    "allTipoAttivita": "Tutti i Tipo Attività",
+    "allTipoCosto": "Tutti i Tipo Costo",
+    "columns": {
+      "progetto": "Progetto",
+      "workPackage": "Work Package",
+      "attivita": "Attività",
+      "tipoSpessa": "Tipo Spessa",
+      "tipoAttivita": "Tipo Attività",
+      "tipoCosto": "Tipo Costo",
+      "importo": "Importo"
+    },
+    "pageSize": "Dimensione pagina:",
+    "rowsDeleted": "riga/e eliminate",
+    "deleteConfirm": "Sei sicuro di voler eliminare",
+    "deleteConfirmSuffix": "riga",
+    "deleteConfirmPlural": "righe",
+    "deleteWarning": "Questa azione non può essere annullata.",
+    "changesSaved": "Modifiche salvate con successo!",
+    "saveFailed": "Impossibile salvare le modifiche",
+    "dataLoaded": "Dati caricati con successo",
+    "loadFailed": "Impossibile caricare i dati"
+  },
+  "example": {
+    "title": "Pagina Esempio",
+    "subtitle": "Esplora vari componenti e funzionalità",
+    "interactiveDemo": "Demo Interattiva",
+    "technicalDetails": "Dettagli Tecnici:",
+    "features": {
+      "theme": "Cambio tema tra modalità scura e chiara",
+      "responsive": "Design responsive che funziona su tutti i dispositivi",
+      "router": "Routing lato client con React Router",
+      "notifications": "Notifiche toast per feedback utente"
+    }
+  },
+  "common": {
+    "close": "Chiudi",
+    "cancel": "Annulla",
+    "save": "Salva",
+    "delete": "Elimina",
+    "edit": "Modifica",
+    "add": "Aggiungi",
+    "remove": "Rimuovi",
+    "search": "Cerca",
+    "loading": "Caricamento...",
+    "error": "Errore",
+    "success": "Successo",
+    "warning": "Avviso",
+    "info": "Info"
+  }
+}

@@ -1,7 +1,8 @@
 import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
-import { VariableSizeList as List } from 'react-window';
+import { FixedSizeList } from 'react-window';
 import { toast } from 'react-hot-toast';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Modal from '../components/Modal';
 import { Search, Filter, RefreshCw, Database, ChevronDown } from 'lucide-react';
 import { fetchBatchData, saveBatchEdits } from '../api/batchEditing';
@@ -10,7 +11,7 @@ import { fetchBatchData, saveBatchEdits } from '../api/batchEditing';
  * OPTIMIZED FOR LARGE DATASETS (1500+ rows)
  * 
  * Features:
- * - Virtual scrolling (only renders visible rows)
+ * - Virtual scrolling with FixedSizeList (only renders visible rows)
  * - Memoized filtering/sorting
  * - Debounced search
  * - Efficient state updates
@@ -33,6 +34,7 @@ function useDebounce(value, delay) {
 }
 
 export default function BatchEditingOptimized() {
+  const { t } = useTranslation();
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -79,7 +81,6 @@ export default function BatchEditingOptimized() {
         _dirty: false,
         _dirtyFields: {},
         _selected: false,
-        _height: 40, // For virtual list
       }));
       setRows(rowsWithMeta);
       toast.success(`Loaded ${result.data.length} records`);
@@ -322,8 +323,8 @@ export default function BatchEditingOptimized() {
     return (
       <div className="p-6 flex items-center justify-center h-full" style={{ minHeight: '200px' }}>
         <div className="max-w-sm text-center px-4">
-          <h2 className="text-lg font-semibold mb-2">Not optimized for mobile</h2>
-          <p className="text-sm text-muted-foreground">Please use a desktop for best experience.</p>
+          <h2 className="text-lg font-semibold mb-2">{t('batchEditing.mobileTitle')}</h2>
+          <p className="text-sm text-muted-foreground">{t('batchEditing.mobileDescription')}</p>
         </div>
       </div>
     );
@@ -397,10 +398,10 @@ export default function BatchEditingOptimized() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-3">
         <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-semibold">Batch Editing (Optimized)</h1>
+          <h1 className="text-2xl font-semibold">{t('batchEditing.title')} (Optimized)</h1>
           {dirtyRows.length > 0 && (
             <span className="px-3 py-1 bg-warning/20 text-warning border border-warning/30 rounded-full text-xs font-semibold animate-pulse">
-              ⚠️ {dirtyRows.length} Unsaved
+              ⚠️ {dirtyRows.length} {t('batchEditing.unsaved')}
             </span>
           )}
           <button onClick={loadData} disabled={loading} className="btn btn-ghost p-2">
@@ -422,7 +423,7 @@ export default function BatchEditingOptimized() {
             disabled={saving || dirtyRows.length === 0} 
             className={`btn btn-primary ${saving ? 'opacity-80' : ''}`}
           >
-            {saving ? 'Saving…' : `Save ${dirtyRows.length > 0 ? `(${dirtyRows.length})` : 'changes'}`}
+            {saving ? t('batchEditing.saving') : `${t('batchEditing.save')} ${dirtyRows.length > 0 ? `(${dirtyRows.length})` : ''}`}
           </button>
         </div>
       </div>
@@ -435,7 +436,7 @@ export default function BatchEditingOptimized() {
           </div>
           <input 
             type="text" 
-            placeholder="Search (debounced 500ms)..." 
+            placeholder={t('batchEditing.search')}
             value={searchQuery} 
             onChange={e => setSearchQuery(e.target.value)} 
             className="input w-full pl-10 pr-3" 
@@ -466,7 +467,7 @@ export default function BatchEditingOptimized() {
       {loading ? (
         <div className="flex items-center justify-center py-12">
           <Database size={32} className="animate-pulse text-accent" />
-          <p className="ml-3 text-muted-foreground">Loading data...</p>
+          <p className="ml-3 text-muted-foreground">{t('batchEditing.loading')}</p>
         </div>
       ) : (
         <div className="excel-table-wrapper-virtual">
@@ -488,16 +489,16 @@ export default function BatchEditingOptimized() {
           </div>
 
           {/* Virtual List */}
-          <List
+          <FixedSizeList
             ref={listRef}
             height={500}
             itemCount={filteredAndSortedRows.length}
-            itemSize={() => 40}
+            itemSize={40}
             width="100%"
             overscanCount={5}
           >
             {Row}
-          </List>
+          </FixedSizeList>
         </div>
       )}
 

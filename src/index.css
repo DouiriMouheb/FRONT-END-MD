@@ -1,42 +1,42 @@
 
 @import "tailwindcss";
 
-/* Industrial / professional color palette using CSS variables */
+/* Professional bluish color palette using CSS variables */
 :root {
-  --bg: 222 13% 98%;           /* very light gray */
-  --panel: 220 12% 96%;        /* panel background */
-  --muted: 220 10% 88%;
-  --text: 215 10% 12%;         /* charcoal */
-  --subtle: 215 8% 46%;        /* muted text */
+  --bg: 215 25% 97%;           /* very light blue-gray */
+  --panel: 215 28% 95%;        /* panel background */
+  --muted: 215 22% 88%;
+  --text: 218 18% 20%;         /* deep blue-gray */
+  --subtle: 217 15% 45%;       /* muted text */
 
-  --accent: 214 36% 46%;       /* steel blue */
+  --accent: 214 80% 52%;       /* vibrant blue */
   --accent-foreground: 210 100% 98%;
 
-  --success: 142 58% 35%;
+  --success: 142 58% 38%;
   --error: 0 74% 46%;
   --warning: 40 90% 55%;
 
-  --border: 220 12% 90%;
-  --input: 220 12% 94%;
+  --border: 215 20% 88%;
+  --input: 215 25% 96%;
 }
 
-/* Dark theme adjustments */
+/* Dark theme adjustments - professional blue dark theme */
 .dark {
-  --bg: 220 10% 8%;        /* neutral charcoal */
-  --panel: 220 10% 10%;
-  --muted: 220 10% 14%;
-  --text: 210 8% 96%;
-  --subtle: 215 8% 72%;
+  --bg: 218 28% 12%;        /* deep blue-charcoal */
+  --panel: 218 24% 15%;     /* slightly lighter panel */
+  --muted: 218 20% 20%;
+  --text: 215 18% 94%;      /* light blue-white */
+  --subtle: 217 12% 70%;
 
-  --accent: 220 6% 78%;    /* subdued accent in dark */
+  --accent: 214 75% 58%;    /* bright blue accent */
   --accent-foreground: 210 20% 98%;
 
-  --success: 142 60% 40%;
-  --error: 0 62% 40%;
-  --warning: 40 90% 55%;
+  --success: 142 60% 42%;
+  --error: 0 62% 50%;
+  --warning: 40 90% 58%;
 
-  --border: 220 12% 12%;
-  --input: 220 12% 10%;
+  --border: 218 20% 22%;
+  --input: 218 22% 16%;
 }
 
 /* icon color token: defaults to text color but can be overridden */
@@ -87,14 +87,29 @@ body {
   font-size: 0.875rem;
   cursor: pointer;
   transition: all 0.15s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 .btn:disabled { opacity: .6; cursor: not-allowed; }
-.btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
+.btn:hover:not(:disabled) { 
+  transform: translateY(-1px); 
+  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.15);
+}
 .btn:active:not(:disabled) { transform: translateY(0); }
-.btn-primary { background: hsl(var(--accent)); color: hsl(var(--accent-foreground)); border-color: color-mix(in srgb, hsl(var(--accent)) 88%, transparent); }
-.btn-primary:hover:not(:disabled) { background: color-mix(in srgb, hsl(var(--accent)) 92%, black); }
-.btn-ghost { background: transparent; border-color: hsl(var(--border)); }
-.btn-ghost:hover:not(:disabled) { background: hsl(var(--muted)); }
+.btn-primary { 
+  background: hsl(var(--accent)); 
+  color: hsl(var(--accent-foreground)); 
+  border-color: color-mix(in srgb, hsl(var(--accent)) 88%, transparent);
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+}
+.btn-primary:hover:not(:disabled) { 
+  background: color-mix(in srgb, hsl(var(--accent)) 85%, white);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+.btn-ghost { background: transparent; border-color: hsl(var(--border)); box-shadow: none; }
+.btn-ghost:hover:not(:disabled) { 
+  background: hsl(var(--muted));
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.1);
+}
 .btn-destructive { background: hsl(var(--error)); color: white; }
 .btn-destructive:hover:not(:disabled) { background: color-mix(in srgb, hsl(var(--error)) 92%, black); }
 .btn-warning { background: hsl(var(--warning)); color: hsl(215 10% 12%); border-color: color-mix(in srgb, hsl(var(--warning)) 88%, transparent); }
@@ -127,10 +142,32 @@ table.app-table tbody tr:nth-child(even) { background: color-mix(in srgb, hsl(va
 .modal-close:hover { background: color-mix(in srgb, hsl(var(--panel)) 88%, hsl(var(--bg))); }
 
 /* Sidebar small refinements */
-.sidebar { width: 16rem; background: hsl(var(--panel)); border-right: 1px solid hsl(var(--border)); }
+.sidebar { 
+  width: 16rem; 
+  background: hsl(var(--panel)); 
+  border-right: 1px solid hsl(var(--border));
+  box-shadow: 2px 0 8px rgba(59, 130, 246, 0.08);
+}
 .sidebar-compact { width: 4rem; }
-.sidebar-nav a { display:flex; align-items:center; gap:.75rem; padding:.55rem; border-radius:.5rem; }
-.sidebar-nav a.active { background: color-mix(in srgb, hsl(var(--accent)) 94%, hsl(var(--panel))); border-left: 3px solid hsl(var(--accent)); color: hsl(var(--accent)); font-weight:700; }
+.sidebar-nav a { 
+  display: flex; 
+  align-items: center; 
+  gap: .75rem; 
+  padding: .55rem; 
+  border-radius: .5rem;
+  transition: all 0.2s ease;
+}
+.sidebar-nav a:hover {
+  background: color-mix(in srgb, hsl(var(--accent)) 10%, transparent);
+  transform: translateX(2px);
+}
+.sidebar-nav a.active { 
+  background: color-mix(in srgb, hsl(var(--accent)) 12%, transparent); 
+  border-left: 3px solid hsl(var(--accent)); 
+  color: hsl(var(--accent)); 
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.1);
+}
 
 /* Improve touch targets for mobile */
 @media (max-width: 768px) {
@@ -587,4 +624,46 @@ body.resizing-column * {
   user-select: none;
 }
 
+/* Range slider styling for image crop modal */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 8px;
+  border-radius: 4px;
+  outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: hsl(var(--accent));
+  cursor: pointer;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: all 0.15s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: hsl(var(--accent));
+  cursor: pointer;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: all 0.15s ease;
+}
+
+input[type="range"]::-moz-range-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+}
 

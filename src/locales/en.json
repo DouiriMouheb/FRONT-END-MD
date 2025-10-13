@@ -1,0 +1,230 @@
+{
+  "nav": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "example": "Example",
+    "batchEditing": "Batch Editing",
+    "messenger": "Messenger",
+    "profile": "Profile",
+    "logout": "Logout"
+  },
+  "profile": {
+    "title": "Profile Settings",
+    "unsavedChanges": "Unsaved Changes",
+    "subtitle": "Manage your account information",
+    "profilePicture": {
+      "title": "Profile Picture",
+      "upload": "Upload Picture",
+      "change": "Change Picture",
+      "remove": "Remove picture",
+      "crop": "Crop Profile Picture",
+      "recommended": "Recommended: Square image, at least 400x400px",
+      "maxSize": "Max file size: 5MB",
+      "errorSize": "Image size must be less than 5MB",
+      "errorType": "Please upload an image file",
+      "updated": "Profile picture updated",
+      "removed": "Profile picture removed",
+      "cropped": "Profile picture cropped successfully"
+    },
+    "language": {
+      "title": "Language",
+      "select": "Select Language",
+      "english": "English",
+      "italian": "Italian"
+    },
+    "personalInfo": {
+      "title": "Personal Information",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "phone": "Phone",
+      "bio": "Bio",
+      "firstNamePlaceholder": "Enter first name",
+      "lastNamePlaceholder": "Enter last name",
+      "emailPlaceholder": "Enter email",
+      "phonePlaceholder": "Enter phone number",
+      "bioPlaceholder": "Tell us about yourself...",
+      "charactersLabel": "characters"
+    },
+    "password": {
+      "title": "Change Password",
+      "current": "Current Password",
+      "new": "New Password",
+      "confirm": "Confirm New Password",
+      "currentPlaceholder": "Enter current password",
+      "newPlaceholder": "Enter new password",
+      "confirmPlaceholder": "Confirm new password",
+      "requirement": "Password must be at least 8 characters long"
+    },
+    "accountInfo": {
+      "title": "Account Information",
+      "status": "Account Status",
+      "active": "Active",
+      "memberSince": "Member Since",
+      "lastLogin": "Last Login",
+      "accountId": "Account ID"
+    },
+    "actions": {
+      "saveChanges": "Save Changes",
+      "saving": "Saving...",
+      "discardChanges": "Discard Changes",
+      "changePassword": "Change Password",
+      "changing": "Changing...",
+      "cancel": "Cancel",
+      "apply": "Apply Crop"
+    },
+    "validation": {
+      "firstNameRequired": "First name is required",
+      "lastNameRequired": "Last name is required",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Invalid email format",
+      "currentPasswordRequired": "Current password is required",
+      "newPasswordRequired": "New password is required",
+      "passwordTooShort": "Password must be at least 8 characters",
+      "confirmPasswordRequired": "Please confirm your password",
+      "passwordsNoMatch": "Passwords do not match",
+      "fixErrors": "Please fix the errors before saving",
+      "fixPasswordErrors": "Please fix the errors before changing password"
+    },
+    "notifications": {
+      "profileUpdated": "Profile updated successfully!",
+      "profileUpdateFailed": "Failed to save profile",
+      "passwordChanged": "Password changed successfully!",
+      "passwordChangeFailed": "Failed to change password",
+      "changesDiscarded": "Changes discarded",
+      "noPasswordChanges": "No password changes to save"
+    },
+    "crop": {
+      "zoom": "Zoom",
+      "rotation": "Rotation",
+      "rotateLeft": "Rotate Left",
+      "rotateRight": "Rotate Right",
+      "resetRotation": "Reset Rotation"
+    }
+  },
+  "messenger": {
+    "title": "Messenger",
+    "conversations": "conversation",
+    "conversations_plural": "conversations",
+    "active": "Active",
+    "search": "Search conversations...",
+    "selectConversation": "Select a conversation",
+    "chooseChat": "Choose a chat from the list to start messaging",
+    "activeNow": "Active now",
+    "offline": "Offline",
+    "typeMessage": "Type a message...",
+    "sendMessage": "Send message",
+    "messageSent": "Message sent!",
+    "imageUpload": "Image upload coming soon!",
+    "fileAttachment": "File attachment coming soon!",
+    "emojiPicker": "Emoji picker coming soon!",
+    "voiceCall": "Voice call feature coming soon!",
+    "videoCall": "Video call feature coming soon!",
+    "moreOptions": "More options coming soon!",
+    "features": {
+      "messaging": {
+        "title": "Real-time Messaging",
+        "description": "Send and receive messages with instant updates and smooth scrolling."
+      },
+      "onlineStatus": {
+        "title": "Online Status",
+        "description": "See who's online with real-time presence indicators."
+      },
+      "search": {
+        "title": "Search & Filter",
+        "description": "Quickly find conversations with the built-in search feature."
+      }
+    }
+  },
+  "home": {
+    "title": "Welcome Home",
+    "subtitle": "This is a modern React template with Vite, Tailwind CSS, and a clean component structure.",
+    "features": {
+      "title": "Features",
+      "items": {
+        "react": "React 19 with Vite",
+        "tailwind": "Tailwind CSS with theme system",
+        "router": "React Router for navigation",
+        "toast": "Toast notifications",
+        "sidebar": "Responsive sidebar layout",
+        "theme": "Dark/Light theme support"
+      }
+    },
+    "quickActions": {
+      "title": "Quick Actions",
+      "showToast": "Show Toast Notification",
+      "openModal": "Open Modal Demo"
+    },
+    "navigate": "Navigate to the",
+    "examplePage": "Example",
+    "toSeeMore": "page to see more components in action."
+  },
+  "batchEditing": {
+    "title": "Batch Editing",
+    "mobileTitle": "Batch editing not available on small screens",
+    "mobileDescription": "This page is not optimized for mobile devices yet. Please open this tool on a tablet or desktop for the best experience.",
+    "mobileTip": "Tip: rotate your device or use a larger screen to continue.",
+    "unsaved": "Unsaved",
+    "records": "records",
+    "of": "of",
+    "loading": "Loading data from database...",
+    "search": "Search progetto, work package, attivita, tipo spessa, tipo attivita, tipo costo, importo...",
+    "reloadData": "Reload data from database",
+    "duplicate": "Duplicate",
+    "delete": "Delete",
+    "save": "Save",
+    "saving": "Saving…",
+    "allProgetti": "All Progetti",
+    "allWorkPackages": "All Work Packages",
+    "allAttivita": "All Attivita",
+    "allTipoSpessa": "All Tipo Spessa",
+    "allTipoAttivita": "All Tipo Attivita",
+    "allTipoCosto": "All Tipo Costo",
+    "columns": {
+      "progetto": "Progetto",
+      "workPackage": "Work Package",
+      "attivita": "Attivita",
+      "tipoSpessa": "Tipo Spessa",
+      "tipoAttivita": "Tipo Attivita",
+      "tipoCosto": "Tipo Costo",
+      "importo": "Importo"
+    },
+    "pageSize": "Page size:",
+    "rowsDeleted": "row(s) deleted",
+    "deleteConfirm": "Are you sure you want to delete",
+    "deleteConfirmSuffix": "row",
+    "deleteConfirmPlural": "rows",
+    "deleteWarning": "This action cannot be undone.",
+    "changesSaved": "Changes saved successfully!",
+    "saveFailed": "Failed to save changes",
+    "dataLoaded": "Data loaded successfully",
+    "loadFailed": "Failed to load data"
+  },
+  "example": {
+    "title": "Example Page",
+    "subtitle": "Explore various components and features",
+    "interactiveDemo": "Interactive Demo",
+    "technicalDetails": "Technical Details:",
+    "features": {
+      "theme": "Theme toggle between dark and light mode",
+      "responsive": "Responsive design that works on all devices",
+      "router": "Client-side routing with React Router",
+      "notifications": "Toast notifications for user feedback"
+    }
+  },
+  "common": {
+    "close": "Close",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "remove": "Remove",
+    "search": "Search",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "warning": "Warning",
+    "info": "Info"
+  }
+}

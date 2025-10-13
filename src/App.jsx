@@ -1,17 +1,23 @@
 
 import React from 'react';
 import { Toaster } from 'react-hot-toast';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { AuthProvider } from './contexts/AuthContext';
 import MainLayout from './layouts/MainLayout';
+import ProtectedRoute from './components/ProtectedRoute';
+import Login from './pages/Login';
 import Home from './pages/Home';
 import Example from './pages/Example';
 import BatchEditing from './pages/BatchEditing';
+import Messenger from './pages/Messenger';
+import ProfileSettings from './pages/ProfileSettings';
+import Dashboard from './pages/Dashboard';
 
 const App = () => (
   <ThemeProvider>
-    <Router>
-      <MainLayout>
+    <AuthProvider>
+      <Router>
         <Toaster 
           position="top-right"
           toastOptions={{
@@ -47,12 +53,75 @@ const App = () => (
           }} 
         />
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/example" element={<Example />} />
-          <Route path="/batch-editing" element={<BatchEditing />} />
+          <Route path="/login" element={<Login />} />
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <Home />
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/example"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <Example />
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/batch-editing"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <BatchEditing />
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/messenger"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <Messenger />
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <ProfileSettings />
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <Dashboard />
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
+          {/* Catch-all route - redirect to home or login */}
+          <Route
+            path="*"
+            element={<Navigate to="/" replace />}
+          />
         </Routes>
-      </MainLayout>
-    </Router>
+      </Router>
+    </AuthProvider>
   </ThemeProvider>
 );
 

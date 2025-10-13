@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { toast } from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 import { Heart, Star, ThumbsUp, MessageSquare } from 'lucide-react';
 import Modal from '../components/Modal';
 import ThemeToggle from '../components/ThemeToggle';
 
 const Example = () => {
+  const { t } = useTranslation();
   const [likeCount, setLikeCount] = useState(42);
   const [starCount, setStarCount] = useState(128);
   const [feedbackModal, setFeedbackModal] = useState(false);
@@ -57,9 +59,9 @@ const Example = () => {
       {/* Header with theme toggle */}
       <div className="flex justify-between items-start mb-6 sm:mb-8">
         <div className="flex-1 text-center">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-3 sm:mb-4">Example Page</h1>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-3 sm:mb-4">{t('example.title')}</h1>
           <p className="text-base sm:text-lg text-muted-foreground mb-4 sm:mb-6 px-2">
-            Demonstrating various components and interactions in action.
+            {t('example.subtitle')}
           </p>
         </div>
         <div className="ml-4 mt-2 hidden sm:block">
@@ -109,7 +111,7 @@ const Example = () => {
       </div>
 
       <div className="bg-background border border-border rounded-lg p-4 sm:p-6 shadow-sm">
-        <h2 className="text-xl sm:text-2xl font-semibold mb-4">Interactive Demo</h2>
+        <h2 className="text-xl sm:text-2xl font-semibold mb-4">{t('example.interactiveDemo')}</h2>
         <p className="text-sm sm:text-base text-muted-foreground mb-4">
           This section demonstrates various interactive elements and state management.
         </p>
@@ -190,7 +192,7 @@ const Example = () => {
           </ul>
           
           <div className="p-4 bg-muted rounded-lg">
-            <h4 className="font-semibold mb-2">Technical Details:</h4>
+            <h4 className="font-semibold mb-2">{t('example.technicalDetails')}</h4>
             <ul className="text-sm text-muted-foreground space-y-1">
               <li>• Built with React functional components and hooks</li>
               <li>• Styled with Tailwind CSS and CSS variables</li>

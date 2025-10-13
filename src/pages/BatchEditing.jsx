@@ -1,11 +1,13 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { toast } from 'react-hot-toast';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Modal from '../components/Modal';
 import { Search, RefreshCw, Database, ChevronUp, ChevronDown, ChevronsUpDown } from 'lucide-react';
 import { fetchBatchData, saveBatchEdits } from '../api/batchEditing';
 
 export default function BatchEditing() {
+  const { t } = useTranslation();
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -74,10 +76,10 @@ export default function BatchEditing() {
         _expanded: false,
       }));
       setRows(rowsWithMeta);
-      toast.success(`Loaded ${result.data.length} records from database`);
+      toast.success(t('batchEditing.dataLoaded'));
     } catch (err) {
       console.error(err);
-      toast.error('Failed to load data');
+      toast.error(t('batchEditing.loadFailed'));
     } finally {
       setLoading(false);
     }
@@ -503,30 +505,24 @@ export default function BatchEditing() {
         return r;
       }));
       
-      const saveMessage = newRows.length > 0 && modifiedRows.length > 0
-        ? `Saved ${modifiedRows.length} change(s) and created ${newRows.length} new row(s)`
-        : newRows.length > 0
-        ? `Created ${newRows.length} new row(s)`
-        : `Saved ${modifiedRows.length} change(s)`;
-      
-      toast.success(saveMessage);
+      toast.success(t('batchEditing.changesSaved'));
     } catch (err) {
       console.error(err);
-      toast.error('Failed to save changes');
+      toast.error(t('batchEditing.saveFailed'));
     } finally { setSaving(false); }
   }
 
   function deleteSelected() { setShowDeleteModal(true); }
-  function confirmDelete() { const toDelete = rows.filter(r => r._selected); setRows(prev => prev.filter(r => !r._selected)); setShowDeleteModal(false); toast.success(`${toDelete.length} row(s) deleted`); }
+  function confirmDelete() { const toDelete = rows.filter(r => r._selected); setRows(prev => prev.filter(r => !r._selected)); setShowDeleteModal(false); toast.success(`${toDelete.length} ${t('batchEditing.rowsDeleted')}`); }
 
   // When on small screens, show a short message advising to use a larger device
   if (isMobile) {
     return (
       <div className="p-6 flex items-center justify-center h-full" style={{ minHeight: '200px' }}>
         <div className="max-w-sm text-center px-4">
-          <h2 className="text-lg font-semibold mb-2">Batch editing not available on small screens</h2>
-          <p className="text-sm text-muted-foreground mb-4">This page is not optimized for mobile devices yet. Please open this tool on a tablet or desktop for the best experience.</p>
-          <div className="text-xs text-muted-foreground">Tip: rotate your device or use a larger screen to continue.</div>
+          <h2 className="text-lg font-semibold mb-2">{t('batchEditing.mobileTitle')}</h2>
+          <p className="text-sm text-muted-foreground mb-4">{t('batchEditing.mobileDescription')}</p>
+          <div className="text-xs text-muted-foreground">{t('batchEditing.mobileTip')}</div>
         </div>
       </div>
     );
@@ -536,15 +532,15 @@ export default function BatchEditing() {
     <div className="p-6" style={{background: 'transparent'}}>
       {/* Header */}
       <div className="flex items-center gap-3 mb-4">
-        <h1 className="text-2xl font-semibold text-foreground">Batch Editing</h1>
+        <h1 className="text-2xl font-semibold text-foreground">{t('batchEditing.title')}</h1>
         {dirtyRows.length > 0 && (
           <span className="px-3 py-1 bg-warning/20 text-warning border border-warning/30 rounded-full text-xs font-semibold animate-pulse">
-            ⚠️ {dirtyRows.length} Unsaved
+            ⚠️ {dirtyRows.length} {t('batchEditing.unsaved')}
           </span>
         )}
         <span className="text-sm text-subtle ml-auto">
-          {filteredRows.length} of {rows.length} records
-          {dirtyRows.length > 0 && ` • ${dirtyRows.length} unsaved`}
+          {filteredRows.length} {t('batchEditing.of')} {rows.length} {t('batchEditing.records')}
+          {dirtyRows.length > 0 && ` • ${dirtyRows.length} ${t('batchEditing.unsaved').toLowerCase()}`}
         </span>
       </div>
 
@@ -557,7 +553,7 @@ export default function BatchEditing() {
             </div>
             <input 
               type="text" 
-              placeholder="Search progetto, work package, attivita, tipo spessa, tipo attivita, tipo costo, importo..." 
+              placeholder={t('batchEditing.search')}
               value={searchQuery} 
               onChange={e => { setSearchQuery(e.target.value); setCurrentPage(1); }} 
               className="input w-full pl-10 pr-3" 
@@ -570,7 +566,7 @@ export default function BatchEditing() {
               onClick={loadData} 
               disabled={loading}
               className="btn btn-ghost p-2"
-              title="Reload data from database"
+              title={t('batchEditing.reloadData')}
             >
               <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
             </button>
@@ -578,10 +574,10 @@ export default function BatchEditing() {
             {selectedCount > 0 && (
               <>
                 <button onClick={duplicateSelected} className="btn btn-warning whitespace-nowrap text-xs">
-                  Duplicate ({selectedCount})
+                  {t('batchEditing.duplicate')} ({selectedCount})
                 </button>
                 <button onClick={deleteSelected} className="btn btn-destructive whitespace-nowrap text-xs">
-                  Delete ({selectedCount})
+                  {t('batchEditing.delete')} ({selectedCount})
                 </button>
               </>
             )}
@@ -591,7 +587,7 @@ export default function BatchEditing() {
               disabled={saving || dirtyRows.length === 0} 
               className={`btn btn-primary whitespace-nowrap text-xs ${saving ? 'opacity-80' : ''}`}
             >
-              {saving ? 'Saving…' : `Save ${dirtyRows.length > 0 ? `(${dirtyRows.length})` : ''}`}
+              {saving ? t('batchEditing.saving') : `${t('batchEditing.save')} ${dirtyRows.length > 0 ? `(${dirtyRows.length})` : ''}`}
             </button>
           </div>
         </div>
@@ -603,7 +599,7 @@ export default function BatchEditing() {
             onChange={e => { setFilters(f => ({ ...f, progetto: e.target.value })); setCurrentPage(1); }}
             className="input text-sm"
           >
-            <option value="">All Progetti</option>
+            <option value="">{t('batchEditing.allProgetti')}</option>
             {uniqueValues.progetto.map(val => (
               <option key={val} value={val}>{val}</option>
             ))}
@@ -614,7 +610,7 @@ export default function BatchEditing() {
             onChange={e => { setFilters(f => ({ ...f, workPackage: e.target.value })); setCurrentPage(1); }}
             className="input text-sm"
           >
-            <option value="">All Work Packages</option>
+            <option value="">{t('batchEditing.allWorkPackages')}</option>
             {uniqueValues.workPackage.map(val => (
               <option key={val} value={val}>{val}</option>
             ))}
@@ -625,7 +621,7 @@ export default function BatchEditing() {
             onChange={e => { setFilters(f => ({ ...f, attivita: e.target.value })); setCurrentPage(1); }}
             className="input text-sm"
           >
-            <option value="">All Attivita</option>
+            <option value="">{t('batchEditing.allAttivita')}</option>
             {uniqueValues.attivita.map(val => (
               <option key={val} value={val}>{val}</option>
             ))}
@@ -636,7 +632,7 @@ export default function BatchEditing() {
             onChange={e => { setFilters(f => ({ ...f, tipoSpessa: e.target.value })); setCurrentPage(1); }}
             className="input text-sm"
           >
-            <option value="">All Tipo Spessa</option>
+            <option value="">{t('batchEditing.allTipoSpessa')}</option>
             {uniqueValues.tipoSpessa.map(val => (
               <option key={val} value={val}>{val}</option>
             ))}
@@ -647,7 +643,7 @@ export default function BatchEditing() {
             onChange={e => { setFilters(f => ({ ...f, tipoAttivita: e.target.value })); setCurrentPage(1); }}
             className="input text-sm"
           >
-            <option value="">All Tipo Attivita</option>
+            <option value="">{t('batchEditing.allTipoAttivita')}</option>
             {uniqueValues.tipoAttivita.map(val => (
               <option key={val} value={val}>{val}</option>
             ))}
@@ -658,7 +654,7 @@ export default function BatchEditing() {
             onChange={e => { setFilters(f => ({ ...f, tipoCosto: e.target.value })); setCurrentPage(1); }}
             className="input text-sm"
           >
-            <option value="">All Tipo Costo</option>
+            <option value="">{t('batchEditing.allTipoCosto')}</option>
             {uniqueValues.tipoCosto.map(val => (
               <option key={val} value={val}>{val}</option>
             ))}
@@ -670,7 +666,7 @@ export default function BatchEditing() {
         <div className="flex items-center justify-center py-12">
           <div className="flex flex-col items-center gap-3">
             <Database size={32} className="animate-pulse text-accent" />
-            <p className="text-muted-foreground">Loading data from database...</p>
+            <p className="text-muted-foreground">{t('batchEditing.loading')}</p>
           </div>
         </div>
       ) : (
@@ -687,31 +683,31 @@ export default function BatchEditing() {
                 <div className="excel-resize-handle" onMouseDown={(e) => startResize('checkbox', e)} title="Drag to resize" />
               </th>
               <th className="excel-header excel-sortable" style={{width: `${columnWidths.progetto}px`, position: 'relative'}} onClick={() => handleSort('progetto')}>
-                <span className="excel-header-content">Progetto {renderSortIcon('progetto')}</span>
+                <span className="excel-header-content">{t('batchEditing.columns.progetto')} {renderSortIcon('progetto')}</span>
                 <div className="excel-resize-handle" onMouseDown={(e) => startResize('progetto', e)} title="Drag to resize" />
               </th>
               <th className="excel-header excel-sortable" style={{width: `${columnWidths.workPackage}px`, position: 'relative'}} onClick={() => handleSort('workPackage')}>
-                <span className="excel-header-content">Work Package {renderSortIcon('workPackage')}</span>
+                <span className="excel-header-content">{t('batchEditing.columns.workPackage')} {renderSortIcon('workPackage')}</span>
                 <div className="excel-resize-handle" onMouseDown={(e) => startResize('workPackage', e)} title="Drag to resize" />
               </th>
               <th className="excel-header excel-sortable" style={{width: `${columnWidths.attivita}px`, position: 'relative'}} onClick={() => handleSort('attivita')}>
-                <span className="excel-header-content">Attivita {renderSortIcon('attivita')}</span>
+                <span className="excel-header-content">{t('batchEditing.columns.attivita')} {renderSortIcon('attivita')}</span>
                 <div className="excel-resize-handle" onMouseDown={(e) => startResize('attivita', e)} title="Drag to resize" />
               </th>
               <th className="excel-header excel-sortable" style={{width: `${columnWidths.tipoSpessa}px`, position: 'relative'}} onClick={() => handleSort('tipoSpessa')}>
-                <span className="excel-header-content">Tipo Spessa {renderSortIcon('tipoSpessa')}</span>
+                <span className="excel-header-content">{t('batchEditing.columns.tipoSpessa')} {renderSortIcon('tipoSpessa')}</span>
                 <div className="excel-resize-handle" onMouseDown={(e) => startResize('tipoSpessa', e)} title="Drag to resize" />
               </th>
               <th className="excel-header excel-sortable" style={{width: `${columnWidths.tipoAttivita}px`, position: 'relative'}} onClick={() => handleSort('tipoAttivita')}>
-                <span className="excel-header-content">Tipo Attivita {renderSortIcon('tipoAttivita')}</span>
+                <span className="excel-header-content">{t('batchEditing.columns.tipoAttivita')} {renderSortIcon('tipoAttivita')}</span>
                 <div className="excel-resize-handle" onMouseDown={(e) => startResize('tipoAttivita', e)} title="Drag to resize" />
               </th>
               <th className="excel-header excel-sortable" style={{width: `${columnWidths.tipoCosto}px`, position: 'relative'}} onClick={() => handleSort('tipoCosto')}>
-                <span className="excel-header-content">Tipo Costo {renderSortIcon('tipoCosto')}</span>
+                <span className="excel-header-content">{t('batchEditing.columns.tipoCosto')} {renderSortIcon('tipoCosto')}</span>
                 <div className="excel-resize-handle" onMouseDown={(e) => startResize('tipoCosto', e)} title="Drag to resize" />
               </th>
               <th className="excel-header excel-sortable" style={{width: `${columnWidths.importo}px`, position: 'relative'}} onClick={() => handleSort('importo')}>
-                <span className="excel-header-content">Importo (€) {renderSortIcon('importo')}</span>
+                <span className="excel-header-content">{t('batchEditing.columns.importo')} (€) {renderSortIcon('importo')}</span>
                 <div className="excel-resize-handle" onMouseDown={(e) => startResize('importo', e)} title="Drag to resize" />
               </th>
             </tr>
@@ -787,7 +783,7 @@ export default function BatchEditing() {
 
       <div className="mt-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div className="flex items-center gap-2">
-          <label className="text-sm">Page size:</label>
+          <label className="text-sm">{t('batchEditing.pageSize')}</label>
           <select value={pageSize} onChange={e => { setPageSize(Number(e.target.value)); setCurrentPage(1); }} className="px-2 py-1 border border-border rounded">
             <option value={20}>20</option>
             <option value={50}>50</option>
@@ -804,8 +800,8 @@ export default function BatchEditing() {
 
       <div className="mt-4 text-sm text-muted-foreground">Tip: Edit data directly in the table and click "Save changes" to persist via the API.</div>
 
-      <Modal open={showDeleteModal} title="Confirm deletion" onBackdropClick={() => setShowDeleteModal(false)} footer={(<><button onClick={() => setShowDeleteModal(false)} className="px-4 py-2 rounded bg-muted text-sidebar-text">Cancel</button><button onClick={confirmDelete} className="px-4 py-2 rounded bg-destructive text-on-destructive">Delete</button></>)}>
-        <div className="py-2">Are you sure you want to delete {selectedCount} row{selectedCount > 1 ? 's' : ''}? This action cannot be undone.</div>
+      <Modal open={showDeleteModal} title="Confirm deletion" onBackdropClick={() => setShowDeleteModal(false)} footer={(<><button onClick={() => setShowDeleteModal(false)} className="px-4 py-2 rounded bg-muted text-sidebar-text">Cancel</button><button onClick={confirmDelete} className="px-4 py-2 rounded bg-destructive text-on-destructive">{t('batchEditing.delete')}</button></>)}>
+        <div className="py-2">{t('batchEditing.deleteConfirm')} {selectedCount} {selectedCount > 1 ? t('batchEditing.deleteConfirmPlural') : t('batchEditing.deleteConfirmSuffix')}? {t('batchEditing.deleteWarning')}</div>
       </Modal>
 
       {/* Navigation Warning Modal */}
