@@ -482,99 +482,107 @@ const ProfileSettings = () => {
           <div style={{ background: 'hsl(var(--panel))' }} className="border border-border rounded-lg p-6">
             <h2 className="text-lg font-semibold text-foreground mb-4">{t('profile.password.title')}</h2>
             
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-1">
-                  {t('profile.password.current')}
-                </label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-subtle" />
-                  <input
-                    type={showCurrentPassword ? 'text' : 'password'}
-                    value={passwordData.currentPassword}
-                    onChange={(e) => handlePasswordChange('currentPassword', e.target.value)}
-                    className={`input w-full pl-10 pr-10 text-sm ${validationErrors.currentPassword ? 'border-error' : ''}`}
-                    placeholder={t('profile.password.currentPlaceholder')}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-subtle hover:text-foreground transition-colors"
-                  >
-                    {showCurrentPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
+            <form onSubmit={(e) => { e.preventDefault(); handleChangePassword(); }} autoComplete="on">
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-1">
+                    {t('profile.password.current')}
+                  </label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-subtle" />
+                    <input
+                      type={showCurrentPassword ? 'text' : 'password'}
+                      value={passwordData.currentPassword}
+                      onChange={(e) => handlePasswordChange('currentPassword', e.target.value)}
+                      className={`input w-full pl-10 pr-10 text-sm ${validationErrors.currentPassword ? 'border-error' : ''}`}
+                      placeholder={t('profile.password.currentPlaceholder')}
+                      autoComplete="current-password"
+                      name="current-password"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-subtle hover:text-foreground transition-colors"
+                    >
+                      {showCurrentPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                  {validationErrors.currentPassword && (
+                    <p className="text-xs text-error mt-1">{validationErrors.currentPassword}</p>
+                  )}
                 </div>
-                {validationErrors.currentPassword && (
-                  <p className="text-xs text-error mt-1">{validationErrors.currentPassword}</p>
-                )}
+
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-1">
+                    {t('profile.password.new')}
+                  </label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-subtle" />
+                    <input
+                      type={showNewPassword ? 'text' : 'password'}
+                      value={passwordData.newPassword}
+                      onChange={(e) => handlePasswordChange('newPassword', e.target.value)}
+                      className={`input w-full pl-10 pr-10 text-sm ${validationErrors.newPassword ? 'border-error' : ''}`}
+                      placeholder={t('profile.password.newPlaceholder')}
+                      autoComplete="new-password"
+                      name="new-password"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowNewPassword(!showNewPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-subtle hover:text-foreground transition-colors"
+                    >
+                      {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                  {validationErrors.newPassword && (
+                    <p className="text-xs text-error mt-1">{validationErrors.newPassword}</p>
+                  )}
+                  <p className="text-xs text-subtle mt-1">
+                    {t('profile.password.requirement')}
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-1">
+                    {t('profile.password.confirm')}
+                  </label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-subtle" />
+                    <input
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      value={passwordData.confirmPassword}
+                      onChange={(e) => handlePasswordChange('confirmPassword', e.target.value)}
+                      className={`input w-full pl-10 pr-10 text-sm ${validationErrors.confirmPassword ? 'border-error' : ''}`}
+                      placeholder={t('profile.password.confirmPlaceholder')}
+                      autoComplete="new-password"
+                      name="confirm-password"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-subtle hover:text-foreground transition-colors"
+                    >
+                      {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                  {validationErrors.confirmPassword && (
+                    <p className="text-xs text-error mt-1">{validationErrors.confirmPassword}</p>
+                  )}
+                </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-1">
-                  {t('profile.password.new')}
-                </label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-subtle" />
-                  <input
-                    type={showNewPassword ? 'text' : 'password'}
-                    value={passwordData.newPassword}
-                    onChange={(e) => handlePasswordChange('newPassword', e.target.value)}
-                    className={`input w-full pl-10 pr-10 text-sm ${validationErrors.newPassword ? 'border-error' : ''}`}
-                    placeholder={t('profile.password.newPlaceholder')}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowNewPassword(!showNewPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-subtle hover:text-foreground transition-colors"
-                  >
-                    {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                </div>
-                {validationErrors.newPassword && (
-                  <p className="text-xs text-error mt-1">{validationErrors.newPassword}</p>
-                )}
-                <p className="text-xs text-subtle mt-1">
-                  {t('profile.password.requirement')}
-                </p>
+              <div className="flex gap-3 mt-6">
+                <button
+                  type="submit"
+                  disabled={saving || (!passwordData.currentPassword && !passwordData.newPassword && !passwordData.confirmPassword)}
+                  className="btn btn-primary"
+                >
+                  <Lock className="w-4 h-4" />
+                  {saving ? t('profile.actions.changing') : t('profile.actions.changePassword')}
+                </button>
               </div>
-
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-1">
-                  {t('profile.password.confirm')}
-                </label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-subtle" />
-                  <input
-                    type={showConfirmPassword ? 'text' : 'password'}
-                    value={passwordData.confirmPassword}
-                    onChange={(e) => handlePasswordChange('confirmPassword', e.target.value)}
-                    className={`input w-full pl-10 pr-10 text-sm ${validationErrors.confirmPassword ? 'border-error' : ''}`}
-                    placeholder={t('profile.password.confirmPlaceholder')}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-subtle hover:text-foreground transition-colors"
-                  >
-                    {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                </div>
-                {validationErrors.confirmPassword && (
-                  <p className="text-xs text-error mt-1">{validationErrors.confirmPassword}</p>
-                )}
-              </div>
-            </div>
-
-            <div className="flex gap-3 mt-6">
-              <button
-                onClick={handleChangePassword}
-                disabled={saving || (!passwordData.currentPassword && !passwordData.newPassword && !passwordData.confirmPassword)}
-                className="btn btn-primary"
-              >
-                <Lock className="w-4 h-4" />
-                {saving ? t('profile.actions.changing') : t('profile.actions.changePassword')}
-              </button>
-            </div>
+            </form>
           </div>
 
           {/* Account Information */}

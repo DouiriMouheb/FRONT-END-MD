@@ -143,7 +143,7 @@ const Dashboard = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-        {/* Weekly Bar Chart */}
+        {/* Weekly Statistics Bars */}
         <div 
           style={{ background: 'hsl(var(--panel))' }}
           className="lg:col-span-2 border border-border rounded-lg p-6"
@@ -156,24 +156,23 @@ const Dashboard = () => {
             <BarChart3 className="w-5 h-5 text-accent" />
           </div>
           
-          <div className="flex items-end justify-between gap-3 h-64 px-4">
+          <div className="space-y-4">
             {weeklyData.map((data, index) => (
-              <div key={index} className="flex flex-col items-center flex-1 gap-2 h-full">
-                <div className="w-full flex items-end justify-center flex-1">
+              <div key={index} className="group">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-foreground">{data.day}</span>
+                  <span className="text-sm font-semibold text-accent">{data.value}%</span>
+                </div>
+                <div className="relative h-3 bg-muted rounded-full overflow-hidden">
                   <div 
-                    className="w-full bg-gradient-to-t from-accent to-accent/70 rounded-t-lg transition-all hover:from-accent/90 hover:to-accent/60 cursor-pointer relative group shadow-lg"
+                    className="absolute top-0 left-0 h-full bg-gradient-to-r from-accent to-accent/70 rounded-full transition-all duration-500 ease-out group-hover:from-accent/90 group-hover:to-accent/60 shadow-md"
                     style={{ 
-                      height: `${(data.value / maxValue) * 100}%`,
-                      minHeight: '30px',
-                      maxWidth: '60px'
+                      width: `${(data.value / maxValue) * 100}%`,
                     }}
                   >
-                    <div className="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-foreground text-background text-xs font-semibold px-2 py-1 rounded shadow-lg whitespace-nowrap z-10">
-                      {data.value}%
-                    </div>
+                    <div className="absolute inset-0 bg-blue-800/80 animate-pulse"></div>
                   </div>
                 </div>
-                <span className="text-xs text-subtle font-medium mt-2">{data.day}</span>
               </div>
             ))}
           </div>
