@@ -4,6 +4,8 @@ import { Toaster } from 'react-hot-toast';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { AuthProvider } from './contexts/AuthContext';
+import { NotificationProvider } from './contexts/NotificationContext';
+import { BatchEditingProvider } from './contexts/BatchEditingContext';
 import MainLayout from './layouts/MainLayout';
 import ProtectedRoute from './components/ProtectedRoute';
 import Login from './pages/Login';
@@ -17,7 +19,9 @@ import Dashboard from './pages/Dashboard';
 const App = () => (
   <ThemeProvider>
     <AuthProvider>
-      <Router>
+      <NotificationProvider>
+        <BatchEditingProvider>
+          <Router>
         <Toaster 
           position="top-right"
           toastOptions={{
@@ -120,7 +124,9 @@ const App = () => (
             element={<Navigate to="/" replace />}
           />
         </Routes>
-      </Router>
+          </Router>
+        </BatchEditingProvider>
+      </NotificationProvider>
     </AuthProvider>
   </ThemeProvider>
 );

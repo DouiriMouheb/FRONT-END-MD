@@ -46,7 +46,7 @@ export default function Modal({
         )}
         <div className="flex-1 overflow-y-auto px-4 py-3 sm:px-6 sm:py-4">{children}</div>
         {footer && (
-          <div className="bg-white px-4 py-3 sm:px-6 sm:py-4 border-t border-border flex flex-col sm:flex-row justify-end gap-2 sm:gap-3">
+          <div className="bg-card px-4 py-3 sm:px-6 sm:py-4 border-t border-border flex flex-col sm:flex-row justify-end gap-2 sm:gap-3">
             {footer}
           </div>
         )}

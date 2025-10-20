@@ -1,20 +1,34 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, Home, FileText, X, Edit, MessageSquare, Settings, BarChart3, LogOut } from 'lucide-react';
+import { Menu, Home, FileText, X, Edit, MessageSquare, Settings, BarChart3, LogOut, AlertTriangle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
+import { useBatchEditing } from '../contexts/BatchEditingContext';
 import toast from 'react-hot-toast';
+import NotificationBell from './NotificationBell';
+import Modal from './Modal';
 
 const Sidebar = ({ open, setOpen, isMobile }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { logout } = useAuth();
+  const { hasUnsavedChanges, dirtyRowsCount } = useBatchEditing();
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const handleLogout = () => {
     logout();
     toast.success('Logged out successfully');
     navigate('/login');
+    setShowLogoutModal(false);
+  };
+
+  const handleLogoutClick = () => {
+    setShowLogoutModal(true);
+  };
+
+  const handleCancelLogout = () => {
+    setShowLogoutModal(false);
   };
 
   const navItems = [
@@ -53,13 +67,49 @@ const Sidebar = ({ open, setOpen, isMobile }) => {
           );
         })}
         <button
-          onClick={handleLogout}
+          onClick={handleLogoutClick}
           className="flex flex-col items-center gap-1 text-sm w-20 py-1 rounded text-muted-foreground"
           aria-label="Logout"
         >
           <LogOut size={20} />
           <span className="truncate text-xs">{t('nav.logout')}</span>
         </button>
+
+        {/* Logout Confirmation Modal for Mobile */}
+        <Modal
+          open={showLogoutModal}
+          title={t('nav.logout')}
+          size="md"
+          onBackdropClick={handleCancelLogout}
+          footer={
+            <>
+              <button onClick={handleCancelLogout} className="btn btn-ghost">
+                Cancel
+              </button>
+              <button onClick={handleLogout} className="btn btn-danger">
+                Logout
+              </button>
+            </>
+          }
+        >
+          {hasUnsavedChanges ? (
+            <div className="space-y-4">
+              <div className="flex items-start gap-3 p-3 bg-warning/10 border border-warning rounded-lg">
+                <AlertTriangle className="text-warning flex-shrink-0 mt-0.5" size={20} />
+                <div>
+                  <p className="font-semibold text-warning mb-1">Unsaved Changes Detected</p>
+                  <p className="text-sm text-foreground">
+                    You have <strong>{dirtyRowsCount}</strong> unsaved {dirtyRowsCount === 1 ? 'change' : 'changes'} in batch editing. 
+                    If you logout now, these changes will be lost.
+                  </p>
+                </div>
+              </div>
+              <p className="text-foreground">Are you sure you want to logout and lose your unsaved changes?</p>
+            </div>
+          ) : (
+            <p className="text-foreground">Are you sure you want to logout?</p>
+          )}
+        </Modal>
       </nav>
     );
   }
@@ -93,11 +143,16 @@ const Sidebar = ({ open, setOpen, isMobile }) => {
             </Link>
           );
         })}
+        
+        {/* Notification Bell */}
+        <div className="mt-2">
+          <NotificationBell isCompact={!open} />
+        </div>
       </nav>
         
       {/* Logout Button - Fixed at bottom */}
       <button
-        onClick={handleLogout}
+        onClick={handleLogoutClick}
         title={!open ? 'Logout' : ''}
         className={`transition-all duration-200 relative group hover:text-red-500 mt-4 ${!open ? 'justify-center flex items-center' : 'flex items-center gap-3'}`}
       >
@@ -109,6 +164,42 @@ const Sidebar = ({ open, setOpen, isMobile }) => {
           <span className="font-medium transition-colors">{t('nav.logout')}</span>
         )}
       </button>
+
+      {/* Logout Confirmation Modal */}
+      <Modal
+        open={showLogoutModal}
+        title={t('nav.logout')}
+        size="md"
+        onBackdropClick={handleCancelLogout}
+        footer={
+          <>
+            <button onClick={handleCancelLogout} className="btn btn-ghost">
+              Cancel
+            </button>
+            <button onClick={handleLogout} className="btn btn-danger">
+              Logout
+            </button>
+          </>
+        }
+      >
+        {hasUnsavedChanges ? (
+          <div className="space-y-4">
+            <div className="flex items-start gap-3 p-3 bg-warning/10 border border-warning rounded-lg">
+              <AlertTriangle className="text-warning flex-shrink-0 mt-0.5" size={20} />
+              <div>
+                <p className="font-semibold text-warning mb-1">Unsaved Changes Detected</p>
+                <p className="text-sm text-foreground">
+                  You have <strong>{dirtyRowsCount}</strong> unsaved {dirtyRowsCount === 1 ? 'change' : 'changes'} in batch editing. 
+                  If you logout now, these changes will be lost.
+                </p>
+              </div>
+            </div>
+            <p className="text-foreground">Are you sure you want to logout and lose your unsaved changes?</p>
+          </div>
+        ) : (
+          <p className="text-foreground">Are you sure you want to logout?</p>
+        )}
+      </Modal>
     </aside>
   );
 };

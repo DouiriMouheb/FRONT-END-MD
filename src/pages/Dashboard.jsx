@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNotify } from '../hooks/useNotify';
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -16,7 +17,38 @@ import {
 
 const Dashboard = () => {
   const { t } = useTranslation();
+  const notify = useNotify();
   const [selectedPeriod, setSelectedPeriod] = useState('month');
+
+  // Demo: Add sample notifications when component mounts
+  useEffect(() => {
+    const hasAddedSampleNotifications = localStorage.getItem('sampleNotificationsAdded');
+    
+    if (!hasAddedSampleNotifications) {
+      // Add sample notifications after a short delay
+      setTimeout(() => {
+        notify.message('New Message', { 
+          message: 'You have a new message from John Doe',
+          from: 'John Doe'
+        });
+      }, 1000);
+
+      setTimeout(() => {
+        notify.dueDate('Project Deadline Approaching', {
+          message: 'The Q4 report is due in 2 days',
+          dueDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000)
+        });
+      }, 2000);
+
+      setTimeout(() => {
+        notify.success('Data Sync Complete', {
+          message: 'All your data has been synchronized successfully'
+        });
+      }, 3000);
+
+      localStorage.setItem('sampleNotificationsAdded', 'true');
+    }
+  }, []);
 
   // Sample data for metrics
   const metrics = [

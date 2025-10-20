@@ -8,6 +8,23 @@
     "profile": "Profilo",
     "logout": "Esci"
   },
+  "notifications": {
+    "title": "Notifiche",
+    "close": "Chiudi",
+    "markAllRead": "Segna tutte come lette",
+    "clearAll": "Cancella tutto",
+    "noNotifications": "Nessuna notifica ancora",
+    "justNow": "Proprio ora",
+    "minutesAgo": "{{count}} min fa",
+    "minutesAgo_plural": "{{count}} min fa",
+    "hoursAgo": "{{count}} ora fa",
+    "hoursAgo_plural": "{{count}} ore fa",
+    "daysAgo": "{{count}} giorno fa",
+    "daysAgo_plural": "{{count}} giorni fa",
+    "from": "Da",
+    "dueDate": "Scadenza",
+    "delete": "Elimina notifica"
+  },
   "profile": {
     "title": "Impostazioni Profilo",
     "unsavedChanges": "Modifiche Non Salvate",

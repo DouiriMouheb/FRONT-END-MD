@@ -5,9 +5,11 @@ import { useTranslation } from 'react-i18next';
 import Modal from '../components/Modal';
 import { Search, RefreshCw, Database, ChevronUp, ChevronDown, ChevronsUpDown } from 'lucide-react';
 import { fetchBatchData, saveBatchEdits } from '../api/batchEditing';
+import { useBatchEditing } from '../contexts/BatchEditingContext';
 
 export default function BatchEditing() {
   const { t } = useTranslation();
+  const { updateUnsavedChanges, clearUnsavedChanges } = useBatchEditing();
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -57,6 +59,18 @@ export default function BatchEditing() {
 
   const dirtyRows = useMemo(() => rows.filter(r => r._dirty), [rows]);
   const selectedCount = useMemo(() => rows.filter(r => r._selected).length, [rows]);
+
+  // Update context when dirty rows change
+  useEffect(() => {
+    updateUnsavedChanges(dirtyRows);
+  }, [dirtyRows, updateUnsavedChanges]);
+
+  // Clear context on unmount
+  useEffect(() => {
+    return () => {
+      clearUnsavedChanges();
+    };
+  }, [clearUnsavedChanges]);
 
   // Initial data fetch on mount
   useEffect(() => {

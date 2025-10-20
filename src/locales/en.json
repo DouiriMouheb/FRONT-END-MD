@@ -8,6 +8,23 @@
     "profile": "Profile",
     "logout": "Logout"
   },
+  "notifications": {
+    "title": "Notifications",
+    "close": "Close",
+    "markAllRead": "Mark all as read",
+    "clearAll": "Clear all",
+    "noNotifications": "No notifications yet",
+    "justNow": "Just now",
+    "minutesAgo": "{{count}} min ago",
+    "minutesAgo_plural": "{{count}} mins ago",
+    "hoursAgo": "{{count}} hour ago",
+    "hoursAgo_plural": "{{count}} hours ago",
+    "daysAgo": "{{count}} day ago",
+    "daysAgo_plural": "{{count}} days ago",
+    "from": "From",
+    "dueDate": "Due",
+    "delete": "Delete notification"
+  },
   "profile": {
     "title": "Profile Settings",
     "unsavedChanges": "Unsaved Changes",
